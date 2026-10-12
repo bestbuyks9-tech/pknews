@@ -2,7 +2,7 @@ export const SITE = {
   name: "Orbita",
   tagline: "Lajmet që lëvizin botën tënde",
   description: "Orbita — lajme nga Kosova dhe bota, të qarta, të shpejta dhe pa zhurmë.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://pknews.vercel.app",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://pknews-dusky.vercel.app",
 };
 
 export const SUPABASE_URL =
