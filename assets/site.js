@@ -29,13 +29,26 @@
     try{localStorage.setItem(themeKey,dark?"dark":"light");}catch(_){}
   }
   function setupSearch(){
-    const panel=$("[data-search-panel]"),open=$("[data-search-open]"),close=$("[data-search-close]"),form=$("[data-search-form]"),input=$("[data-search-input]");
-    if(panel&&open) open.addEventListener("click",()=>{panel.classList.toggle("open");open.setAttribute("aria-expanded",String(panel.classList.contains("open")));if(panel.classList.contains("open")&&input)input.focus();});
+    const panel=$("[data-search-panel]"),open=$("[data-search-open]"),close=$("[data-search-close]");
+    if(panel&&open) open.addEventListener("click",()=>{
+      panel.classList.toggle("open");
+      open.setAttribute("aria-expanded",String(panel.classList.contains("open")));
+      const input=$("[data-search-input]",panel);
+      if(panel.classList.contains("open")&&input)input.focus();
+    });
     if(panel&&close) close.addEventListener("click",()=>panel.classList.remove("open"));
-    if(form&&input){
-      form.addEventListener("submit",e=>{e.preventDefault();const q=input.value.trim();if(!q){input.setCustomValidity(text[language].searchRequired);input.reportValidity();return;}input.setCustomValidity("");window.location.href="/kerkimi/?q="+encodeURIComponent(q);});
+    $$("[data-search-form], [data-local-search-form]").forEach(form=>{
+      const input=$("[data-search-input], [data-local-search-input]",form);
+      if(!input)return;
+      form.addEventListener("submit",event=>{
+        event.preventDefault();
+        const q=input.value.trim();
+        if(!q){input.setCustomValidity(text[language].searchRequired);input.reportValidity();return;}
+        input.setCustomValidity("");
+        window.location.href="/kerkimi/?q="+encodeURIComponent(q);
+      });
       input.addEventListener("input",()=>input.setCustomValidity(""));
-    }
+    });
   }
   function card(article){
     const a=document.createElement("a");a.className="story-card";a.href=article.path;
@@ -55,7 +68,7 @@
     const q=(new URLSearchParams(window.location.search).get("q")||"").trim();
     const normalized=q.toLocaleLowerCase(language==="sq"?"sq-XK":"en-GB");
     const heading=$("[data-search-heading]");if(heading)heading.textContent=normalized?text[language].resultsFor+': “'+q+'”':text[language].searchTitle;
-    const input=$("[data-search-input]");if(input)input.value=q;
+    const input=$("[data-local-search-input]")||$("[data-search-input]");if(input)input.value=q;
     const results=window.PK_ARTICLES.filter(a=>[a.titleSq,a.titleEn,a.summarySq,a.summaryEn,a.categorySq,a.categoryEn,a.keywords].join(" ").toLocaleLowerCase(language==="sq"?"sq-XK":"en-GB").includes(normalized));
     container.replaceChildren();
     if(results.length)results.forEach(a=>container.appendChild(card(a)));
