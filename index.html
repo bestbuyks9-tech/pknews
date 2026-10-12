@@ -143,11 +143,23 @@ async function loadLiveNews(){
 }
 function setupNavigation(){
  const links=Array.from(document.querySelectorAll('.navinner a[href^="#"]'));
- links.forEach(link=>link.addEventListener('click',()=>{
-  links.forEach(x=>x.classList.remove('active'));link.classList.add('active');
+ links.forEach(link=>link.addEventListener('click',event=>{
+  // Handle the scroll ourselves so the browser's default hash jump cannot
+  // fight the smooth scroll and leave the page at an unexpected position.
+  event.preventDefault();
   const target=link.getAttribute('href');
-  if(target==='#'){window.scrollTo({top:0,behavior:'smooth'});return;}
-  const el=document.querySelector(target);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});}
+  links.forEach(x=>x.classList.remove('active'));
+  link.classList.add('active');
+  if(!target || target==='#'){
+   history.replaceState(null,'',window.location.pathname+window.location.search);
+   window.scrollTo({top:0,behavior:'smooth'});
+   return;
+  }
+  const el=document.getElementById(target.slice(1));
+  if(!el)return;
+  history.replaceState(null,'',target);
+  const top=el.getBoundingClientRect().top+window.scrollY-16;
+  window.scrollTo({top:Math.max(0,top),behavior:'smooth'});
  }));
 }
 
