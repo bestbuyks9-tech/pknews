@@ -31,6 +31,7 @@ export default function Editor({ id, profile, onClose, onSaved }: { id: string |
   const [dirty, setDirty] = useState(false);
   const [uploading, setUploading] = useState(false);
   const canPublish = profile.role !== "editor";
+  const edRef = useRef<TipTap | null>(null);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -47,17 +48,18 @@ export default function Editor({ id, profile, onClose, onSaved }: { id: string |
         const file = event.dataTransfer?.files?.[0];
         if (!file || !file.type.startsWith("image/")) return false;
         event.preventDefault();
-        uploadImage(file).then((src) => editor?.chain().focus().setImage({ src, alt: "" }).run()).catch((e) => setNotice({ kind: "err", text: e.message }));
+        uploadImage(file).then((src) => edRef.current?.chain().focus().setImage({ src, alt: "" }).run()).catch((err: Error) => setNotice({ kind: "err", text: err.message }));
         return true;
       },
       handlePaste: (_view, event) => {
         const file = event.clipboardData?.files?.[0];
         if (!file || !file.type.startsWith("image/")) return false;
-        uploadImage(file).then((src) => editor?.chain().focus().setImage({ src, alt: "" }).run()).catch((e) => setNotice({ kind: "err", text: e.message }));
+        uploadImage(file).then((src) => edRef.current?.chain().focus().setImage({ src, alt: "" }).run()).catch((err: Error) => setNotice({ kind: "err", text: err.message }));
         return true;
       },
     },
   });
+  edRef.current = editor;
 
   useEffect(() => {
     if (!id) return;
