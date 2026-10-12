@@ -1,20 +1,20 @@
-# PK Online
+# Orbita
 
-PK Online is a static news portal with original Albanian-language articles hosted within the site.
+News site built with Next.js (App Router) on Vercel, with Supabase for posts, photos and staff logins.
+
+## Posting news
+1. Go to `/studio` and sign in.
+2. Click **＋ Postim i ri**, drop a cover photo, write the title, summary and story.
+3. Pick a section and click **Publiko**. It appears on the site within ~30 seconds.
+
+Journalists (role *Gazetar*) can only send posts **for review**; editors-in-chief (*Kryeredaktor*) and admins publish.
+Admins add or remove people under **Ekipi** in the Studio.
 
 ## Structure
-- `index.html`: homepage
-- `kosovo/`, `politika/`, `ekonomi/`, `bota/`, `sport/`, `teknologji/`: internal category pages
-- `lajme/<slug>/index.html`: full locally hosted article pages
-- `kerkimi/index.html`: internal article search page
-- `assets/site.css`: shared responsive gray/yellow design
-- `assets/site.js`: weather, search, language and theme controls
-- `assets/articles.js`: metadata for local search
+- `app/` — public pages: home, `/[rubrika]`, `/lajm/[slug]`, `/kerko`, and `/studio`
+- `components/` — header, footer, logo, cards
+- `lib/` — site config (name, sections, colours) and data access
+- `supabase/migrations/001_orbita.sql` — database schema
+- `supabase/functions/team` — admin-only edge function to add/remove staff
 
-## Editorial and navigation policy
-Navigation, category cards, article cards, search results and related stories link only to PK Online URLs. Information sources are named in article text without outbound links. External RSS headline aggregation is no longer used. Article text is original prose based on identifiable public data, official statements and reporting, with sources and dates stated in each story. Recheck facts and update articles when new developments occur.
-
-The weather panel retrieves current forecast data from Open-Meteo. It does not create a clickable external link. Advertising placements are placeholders; ad-network tags have not been configured.
-
-## Deploy
-Changes merged to `main` deploy through Vercel. Every category/article path is a static folder with an `index.html` file.
+Sections and their colours live in `lib/site.ts`.
