@@ -6,6 +6,10 @@ const symbols = { kosovo:'🇽🇰', politika:'⚖', ekonomi:'€', bota:'🌍',
 function makeCard(article) {
   const card=document.createElement('a'); card.className='story-card'; card.href='/lajme/?slug='+encodeURIComponent(article.slug);
   const cover=document.createElement('div'); cover.className='cover-art'; cover.setAttribute('data-symbol',symbols[article.category]||'PK');
+  if(article.image_url){
+    const image=document.createElement('img'); image.className='cover-art-image'; image.src=article.image_url; image.alt=article.title; image.loading='lazy';
+    image.onerror=()=>image.remove(); cover.prepend(image);
+  }
   const tag=document.createElement('span'); tag.className='cover-art-label'; tag.textContent=(labels[article.category]||[article.category,article.category])[document.documentElement.lang==='en'?1:0]; cover.append(tag);
   const body=document.createElement('div'); body.className='story-card-body';
   const meta=document.createElement('div'); meta.className='story-card-meta';
