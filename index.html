@@ -15,7 +15,7 @@
 @media(max-width:900px){.leadgrid{grid-template-columns:1fr}.hero{min-height:480px}.sidepanel{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.sidehead{grid-column:1/-1}.brief:nth-child(odd){border-bottom:0}.brief:last-child{border-bottom:0}.lowergrid{grid-template-columns:1fr}.numbers{display:none}.mast{padding:21px 0}.navinner{gap:21px}.featuregrid{gap:12px}.storyimg img{height:160px}.storybody{padding:15px}.story h3{font-size:17px}.footergrid{grid-template-columns:1fr 1fr}.footergrid>div:first-child{grid-column:1/-1}}
 @media(max-width:600px){.wrap{width:calc(100% - 30px)}.microright{display:none}.microinner{min-height:31px}.mast{padding:18px 0;gap:10px}.brandmark{width:42px;height:42px;font-size:17px}.brand{gap:9px}.brandname{font-size:27px}.brandtag{font-size:8px}.masttools{gap:5px}.iconbtn,.langbtn{min-height:36px;padding:0 9px;font-size:10px}.iconbtn span{display:none}.navinner{min-height:44px;gap:20px}.navinner a{font-size:11px;padding:15px 0}.navsearch{display:none}.tickerinner{min-height:39px;gap:9px}.tickerlabel{font-size:9px;padding:7px}.tickertext{font-size:10px}.introline{margin:23px 0 13px}.date{font-size:9px}.hero{min-height:460px}.hero-content{padding:22px}.hero h1{font-size:35px;letter-spacing:-1.2px}.hero p{font-size:12px}.sidepanel{display:block;padding:18px 17px 4px}.brief{grid-template-columns:76px 1fr}.brief img{width:76px;height:76px}.brief:nth-child(odd){border-bottom:1px solid var(--line)}.brief:last-child{border:0}.adslot{min-height:70px;margin:19px 0 26px}.sectiontitle{font-size:23px}.sectiondesc{font-size:11px}.featuregrid{grid-template-columns:1fr;gap:14px}.story{display:grid;grid-template-columns:130px 1fr}.storyimg img{height:100%;min-height:160px}.storybody{padding:13px}.story h3{font-size:16px;margin:8px 0}.story p{font-size:11px}.storymeta{flex-wrap:wrap}.labeldemo{margin-top:8px}.lowergrid{margin-top:32px}.listrow{grid-template-columns:94px 1fr;gap:12px}.listrow img{width:94px;height:92px}.listrow h3{font-size:15px}.listrow p{font-size:11px}.newsletter{padding:23px 18px;align-items:flex-start;flex-direction:column;margin:30px 0}.newsletter-actions{width:100%}.emailinput{width:100%;max-width:none;min-width:0}.primarybtn{white-space:nowrap}.footergrid{grid-template-columns:1fr 1fr;gap:22px}.footergrid>div:first-child{grid-column:1/-1}.footer .brandname{font-size:24px}.footbottom{font-size:9px}}
 
-/* Live news, weather and ad inventory */
+/* Native menu anchor targets */\n#kosovo,#politika,#ekonomi,#bota,#sport,#teknologji,#rubrikat,#lajmet-e-fundit{scroll-margin-top:18px}\n\n/* Live news, weather and ad inventory */
 .weatherbar{margin:18px auto 0;background:var(--card);border:1px solid var(--line);border-radius:7px;display:grid;grid-template-columns:1.05fr 1fr 1.3fr;align-items:center;gap:16px;padding:15px 20px;box-shadow:0 5px 18px rgba(30,30,20,.025)}
 .weatherplace{display:flex;align-items:center;gap:12px}.weathericon{font-size:31px;line-height:1}.weatherplace strong{display:block;font-family:Manrope,sans-serif;font-size:15px}.weatherplace small,.weatherreading small{display:block;color:var(--muted);font-size:10px;margin-top:4px}
 .weatherreading{border-left:1px solid var(--line);padding-left:18px}.tempbig{font-family:Manrope,sans-serif;font-size:27px;letter-spacing:-1px;font-weight:800}.weatherstats{display:flex;justify-content:flex-end;gap:18px}.weatherstat strong{display:block;font-size:12px}.weatherstat small{font-size:9px;color:var(--muted);display:block;margin-top:4px}.weatherdays{grid-column:1/-1;border-top:1px solid var(--line);padding-top:10px;display:flex;gap:9px;flex-wrap:wrap}.weatherday{background:var(--soft);border-radius:4px;padding:8px 11px;font-size:10px;display:flex;gap:10px;align-items:center}.weatherday b{font-size:11px}.weathernote{font-size:9px;color:var(--muted);margin-left:auto;align-self:center}
@@ -143,25 +143,21 @@ async function loadLiveNews(){
 }
 function setupNavigation(){
  const links=Array.from(document.querySelectorAll('.navinner a[href^="#"]'));
- links.forEach(link=>link.addEventListener('click',event=>{
-  // Prevent the browser hash jump and scroll the selected destination into
-  // the middle of the viewport. Aligning to the very top can be clamped to
-  // the document's maximum scroll position, making a menu click look like
-  // it jumped to the page bottom.
-  event.preventDefault();
-  const target=link.getAttribute('href');
+ function updateActive(){
+  const hash=window.location.hash;
+  links.forEach(link=>{
+   const target=link.getAttribute('href');
+   link.classList.toggle('active',hash ? target===hash : target==='#');
+  });
+ }
+ // Let normal #anchor links handle navigation. Do not intercept clicks or
+ // call scrollIntoView/window.scrollTo, which can fight the browser's layout.
+ links.forEach(link=>link.addEventListener('click',()=>{
   links.forEach(x=>x.classList.remove('active'));
   link.classList.add('active');
-  if(!target || target==='#'){
-   history.replaceState(null,'',window.location.pathname+window.location.search);
-   window.scrollTo({top:0,behavior:'smooth'});
-   return;
-  }
-  const el=document.getElementById(target.slice(1));
-  if(!el)return;
-  history.replaceState(null,'',target);
-  el.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'});
  }));
+ window.addEventListener('hashchange',updateActive);
+ updateActive();
 }
 
 setupNavigation();loadWeather();loadLiveNews();
