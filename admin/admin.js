@@ -34,6 +34,8 @@ function clearEditor() {
   $('publishBtn').hidden = !canManage();
   $('submitBtn').hidden = canManage();
   $('saveDraftBtn').hidden = false;
+  $('deleteBtn').hidden = true;
+  $('deleteBtn').disabled = true;
   setFormEnabled(true);
   renderArticles();
 }
@@ -85,6 +87,8 @@ function loadArticleIntoEditor(a) {
   $('publishBtn').hidden = !canManage();
   $('submitBtn').hidden = canManage();
   $('saveDraftBtn').hidden = !editable;
+  $('deleteBtn').hidden = !canManage();
+  $('deleteBtn').disabled = !canManage();
   $('publishBtn').disabled = !editable;
   $('submitBtn').disabled = !editable;
   if (!editable) message($('editorMessage'), 'Ky artikull është vetëm për lexim. Vetëm autori mund të ndryshojë draftet e veta; menaxheri ose administratori mund të ndryshojë çdo artikull.');
@@ -141,6 +145,24 @@ async function enterApp(user) {
   catch (error) { message($('editorMessage'), 'Gabim gjatë ngarkimit: ' + error.message); }
   clearEditor();
 }
+async function deleteArticle() {
+  if (!canManage() || !state.selectedId) return;
+  const article = state.articles.find(a => a.id === state.selectedId);
+  if (!article) return;
+  if (!window.confirm('A je i sigurt që dëshiron ta fshish përgjithmonë artikullin "' + article.title + '"? Ky veprim nuk mund të zhbëhet.')) return;
+  const button = $('deleteBtn');
+  button.disabled = true;
+  message($('editorMessage'), 'Duke fshirë artikullin…');
+  const { error } = await supabase.from('articles').delete().eq('id', state.selectedId).select('id').single();
+  if (error) {
+    message($('editorMessage'), 'Artikulli nuk u fshi: ' + error.message);
+    button.disabled = false;
+    return;
+  }
+  await loadArticles();
+  clearEditor();
+  message($('editorMessage'), 'Artikulli u fshi me sukses.', true);
+}
 async function saveArticle(status) {
   message($('editorMessage'), '');
   const title = $('title').value.trim();
@@ -190,6 +212,7 @@ $('slug').addEventListener('input', () => { $('slug').value = slugify($('slug').
 $('saveDraftBtn').addEventListener('click', () => saveArticle('draft'));
 $('submitBtn').addEventListener('click', () => saveArticle('pending_review'));
 $('publishBtn').addEventListener('click', () => saveArticle('published'));
+$('deleteBtn').addEventListener('click', deleteArticle);
 $('articleSearch').addEventListener('input', renderArticles);
 document.querySelectorAll('[data-filter]').forEach(btn => btn.addEventListener('click', () => {
   state.filter = btn.dataset.filter;
