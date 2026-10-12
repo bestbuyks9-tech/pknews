@@ -1,0 +1,133 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PK Online — Kosovo and the world, in focus.">
+  <title>PK Online | Latest News</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #18202c;
+      background: #f5f6f8;
+    }
+    header {
+      background: white;
+      padding: 24px 6%;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .logo { font-size: 36px; font-weight: 900; letter-spacing: -2px; }
+    .logo span { color: #e32936; }
+    .tagline { color: #667085; margin-top: 5px; }
+    nav {
+      display: flex;
+      gap: 25px;
+      padding: 15px 6%;
+      background: #172235;
+      overflow-x: auto;
+    }
+    nav a { color: white; text-decoration: none; font-size: 14px; }
+    main { max-width: 1150px; margin: 30px auto; padding: 0 20px; }
+    .label { color: #e32936; font-weight: bold; font-size: 12px; }
+    .layout { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+    .hero, .latest, .story { background: white; border-radius: 8px; overflow: hidden; }
+    .hero img { width: 100%; height: 300px; object-fit: cover; }
+    .content { padding: 22px; }
+    h1 { font-size: clamp(28px, 4vw, 42px); margin: 12px 0; }
+    h2 { font-size: 23px; }
+    p { line-height: 1.6; color: #596273; }
+    .latest { padding: 22px; }
+    .latest article { padding: 14px 0; border-bottom: 1px solid #eee; }
+    .latest article:last-child { border: 0; }
+    .ad {
+      margin: 25px 0;
+      padding: 25px;
+      text-align: center;
+      color: #89909c;
+      border: 1px dashed #c8cdd5;
+      background: #fff;
+      font-size: 12px;
+    }
+    .stories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .story { padding-bottom: 18px; }
+    .story img { width: 100%; height: 150px; object-fit: cover; }
+    .story h3, .story p { margin: 12px 15px; }
+    footer { margin-top: 45px; background: #172235; color: white; padding: 30px 6%; }
+    footer p { color: #cbd0da; }
+    @media (max-width: 700px) {
+      .layout, .stories { grid-template-columns: 1fr; }
+      .hero img { height: 220px; }
+      nav { gap: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><span>PK</span> ONLINE</div>
+    <div class="tagline">Kosovo and the world, in focus.</div>
+  </header>
+
+  <nav>
+    <a href="#">Home</a>
+    <a href="#kosovo">Kosovo</a>
+    <a href="#politics">Politics</a>
+    <a href="#business">Business</a>
+    <a href="#world">World</a>
+    <a href="#sports">Sports</a>
+    <a href="#technology">Technology</a>
+  </nav>
+
+  <main>
+    <div class="layout">
+      <section class="hero">
+        <img src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1200&q=80" alt="City skyline">
+        <div class="content">
+          <div class="label">TOP STORY · KOSOVO</div>
+          <h1>Kosovo and the stories shaping today</h1>
+          <p>Your destination for the latest news, important developments and stories that matter to Kosovo and its people.</p>
+          <p>Welcome to PK Online. We're building a new home for news and information.</p>
+        </div>
+      </section>
+
+      <aside class="latest">
+        <div class="label">STAY INFORMED</div>
+        <h2>Latest News</h2>
+        <article><strong>Kosovo</strong><p>Updates and developments from across the country.</p></article>
+        <article><strong>Politics</strong><p>Decisions, policies and public affairs.</p></article>
+        <article><strong>Business</strong><p>Economy, companies and market news.</p></article>
+        <article><strong>World</strong><p>Important stories from around the globe.</p></article>
+      </aside>
+    </div>
+
+    <div class="ad">ADVERTISEMENT</div>
+
+    <h2>Explore the headlines</h2>
+    <div class="stories">
+      <article class="story" id="kosovo">
+        <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=700&q=80" alt="City buildings">
+        <h3>Kosovo News</h3>
+        <p>Local news, community updates and national developments.</p>
+      </article>
+      <article class="story" id="business">
+        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=700&q=80" alt="Modern business buildings">
+        <h3>Business & Economy</h3>
+        <p>Companies, employment and economic trends.</p>
+      </article>
+      <article class="story" id="world">
+        <img src="https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=700&q=80" alt="World map">
+        <h3>World News</h3>
+        <p>Global events and stories beyond our borders.</p>
+      </article>
+    </div>
+  </main>
+
+  <footer>
+    <div class="logo"><span>PK</span> ONLINE</div>
+    <p>Independent perspectives. Important stories.</p>
+    <p>© 2026 PK Online. All rights reserved.</p>
+  </footer>
+</body>
+</html>
