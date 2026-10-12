@@ -142,7 +142,7 @@ async function loadLiveNews(){
  }
 }
 function setupNavigation(){
- const links=$('.navinner a[href^="#"]');
+ const links=Array.from(document.querySelectorAll('.navinner a[href^="#"]'));
  links.forEach(link=>link.addEventListener('click',()=>{
   links.forEach(x=>x.classList.remove('active'));link.classList.add('active');
   const target=link.getAttribute('href');
