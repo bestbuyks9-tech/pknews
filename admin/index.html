@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="sq">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#e6bf28">
+<title>PK Online | Redaksia</title>
+<link rel="stylesheet" href="/admin/admin.css">
+<script type="module" src="/admin/admin.js"></script>
+</head>
+<body>
+<header class="top"><a class="brand" href="/" aria-label="PK Online"><span class="mark">PK</span><span><strong>PK ONLINE</strong><small>PANELI EDITORIAL</small></span></a><a class="site-link" href="/">Shiko faqen ↗</a></header>
+<main class="shell">
+<section id="loginView" class="login-card">
+  <span class="eyebrow">QASJE E SIGURT</span><h1>Mirë se u ktheve.</h1><p>Hyr në panelin editorial të PK Online.</p>
+  <form id="loginForm"><label>Email<input id="email" type="email" autocomplete="username" required placeholder="redaksia@pkonline.com"></label><label>Fjalëkalimi<input id="password" type="password" autocomplete="current-password" required placeholder="Fjalëkalimi" minlength="8"></label><button class="primary full" type="submit">Hyr në panel <span>→</span></button></form>
+  <p id="loginMessage" class="message" role="status"></p><p class="fine">Llogaritë krijohen nga administratori. Regjistrimi publik është i çaktivizuar.</p>
+</section>
+<section id="appView" hidden>
+  <div class="welcome"><div><span class="eyebrow">PANELI EDITORIAL</span><h1>Menaxhimi i lajmeve</h1><p id="userLine">Po ngarkohen të dhënat…</p></div><button id="logoutBtn" class="quiet">Dil ↗</button></div>
+  <div class="stats"><article><span>Gjithsej artikuj</span><strong id="statTotal">0</strong></article><article><span>Në shqyrtim</span><strong id="statReview">0</strong></article><article><span>Të publikuar</span><strong id="statPublished">0</strong></article></div>
+  <div class="workspace">
+    <aside class="list-panel"><div class="list-heading"><h2>Artikujt</h2><button id="newBtn" class="primary small">+ Artikull i ri</button></div><label class="search-label">Filtro artikujt<input id="articleSearch" type="search" placeholder="Kërko sipas titullit…"></label><div class="filters"><button class="filter active" data-filter="all">Të gjithë</button><button class="filter" data-filter="pending_review">Në shqyrtim</button><button class="filter" data-filter="draft">Draft</button><button class="filter" data-filter="published">Publikuar</button></div><div id="articleList" class="article-list"></div></aside>
+    <section class="editor-panel"><div class="editor-heading"><div><span class="eyebrow" id="editorEyebrow">EDITORI</span><h2 id="editorTitle">Artikull i ri</h2></div><span id="statusPill" class="pill">Draft</span></div>
+      <form id="articleForm">
+        <div class="field-grid"><label>Titulli *<input id="title" required maxlength="180" placeholder="Titulli i lajmit"></label><label>Slug / URL *<input id="slug" required pattern="[a-z0-9]+(?:-[a-z0-9]+)*" placeholder="titulli-i-lajmit"><small>Përdor shkronja të vogla, numra dhe viza.</small></label></div>
+        <div class="field-grid"><label>Kategoria<select id="category"><option value="kosovo">Kosova</option><option value="politika">Politikë</option><option value="ekonomi">Ekonomi</option><option value="bota">Bota</option><option value="sport">Sport</option><option value="teknologji">Teknologji</option></select></label><label>URL e fotografisë<input id="imageUrl" type="url" placeholder="https://…"></label></div>
+        <label>Përmbledhja<textarea id="summary" rows="3" maxlength="500" placeholder="Përmbledhje e shkurtër për kartelën e lajmit"></textarea></label>
+        <label>Përmbajtja *<textarea id="body" rows="14" required placeholder="Shkruaj përmbajtjen e artikullit…"></textarea></label>
+        <div id="editorMessage" class="message" role="status"></div>
+        <div class="actions"><button id="saveDraftBtn" type="button" class="quiet">Ruaj draftin</button><button id="submitBtn" type="button" class="secondary">Dërgo për miratim</button><button id="publishBtn" type="button" class="primary">Publiko</button></div>
+      </form>
+    </section>
+  </div>
+  <section id="usersPanel" class="users-panel" hidden><div class="list-heading"><div><span class="eyebrow">ADMINISTRIMI</span><h2>Përdoruesit dhe rolet</h2></div></div><p class="fine">Për të shtuar një person, krijo fillimisht llogarinë e tij te Supabase → Authentication → Users. Pastaj cakto rolin këtu.</p><div id="usersList"></div></section>
+</section>
+</main>
+<footer>PK Online · Panel privat i redaksisë</footer>
+</body></html>
