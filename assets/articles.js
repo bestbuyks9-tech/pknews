@@ -160,3 +160,43 @@ window.PK_ARTICLES = [
     "keywords": "teknologji ICT IT digjitalizim KosICT investime biznes Kosovë"
   }
 ];
+
+
+// Add relevant editorial photography to every pre-existing static article and its cards.
+(() => {
+  const images = {
+    "inflacioni-shtator-2026": { src: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1400&q=85", alt: "Fresh produce in a grocery market" },
+    "financimi-shendetesia-41-milione": { src: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1400&q=85", alt: "Healthcare professionals in a medical setting" },
+    "radio-policia-transmetim-eksperimental": { src: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=1400&q=85", alt: "Radio and audio broadcasting equipment" },
+    "kosova-zgjedh-presidente": { src: "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?auto=format&fit=crop&w=1400&q=85", alt: "Government and parliamentary buildings" },
+    "prishtina-2030-kredi-60-milione": { src: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1400&q=85", alt: "Athlete running on a track" },
+    "kosova-austria-barazim-nations-league": { src: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1400&q=85", alt: "Football on a stadium pitch" },
+    "vizita-von-der-leyen-kosove": { src: "https://images.unsplash.com/photo-1520174691701-bc555a3404ca?auto=format&fit=crop&w=1400&q=85", alt: "European city and civic architecture" },
+    "protestat-dhomat-specializuara": { src: "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?auto=format&fit=crop&w=1400&q=85", alt: "Government buildings" },
+    "forumi-biznesit-kosove-britani": { src: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1400&q=85", alt: "Business professionals collaborating at a meeting" },
+    "sektori-teknologjise-kosove": { src: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1400&q=85", alt: "Technology team working together" }
+  };
+  const addImage = (cover, id, eager = false) => {
+    const item = images[id];
+    if (!cover || !item || cover.querySelector(".cover-art-image")) return;
+    const img = document.createElement("img");
+    img.className = "cover-art-image";
+    img.src = item.src;
+    img.alt = item.alt;
+    img.loading = eager ? "eager" : "lazy";
+    img.decoding = "async";
+    img.onerror = () => img.remove();
+    cover.prepend(img);
+  };
+  const pathParts = location.pathname.split("/").filter(Boolean);
+  const currentSlug = pathParts[0] === "lajme" && pathParts[1] ? pathParts[1] : "";
+  if (currentSlug) addImage(document.querySelector(".article-hero-art"), currentSlug, true);
+  document.querySelectorAll(".story-card[href]").forEach(card => {
+    try {
+      const url = new URL(card.href, location.origin);
+      const parts = url.pathname.split("/").filter(Boolean);
+      const slug = parts[0] === "lajme" && parts[1] ? parts[1] : "";
+      if (slug) addImage(card.querySelector(".cover-art"), slug);
+    } catch (_) {}
+  });
+})();
