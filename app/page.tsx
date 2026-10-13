@@ -19,7 +19,7 @@ export default async function Home() {
       <Header breaking={posts.slice(0, 8)} />
       <main id="main" className="wrap">
         {!lead ? (
-          <Empty title="Ende nuk ka lajme të publikuara." text="Lajmet që publikohen nga redaksia shfaqen këtu menjëherë." />
+          <Empty title="Ende nuk ka lajme të publikuara." text="Ju lutemi rikthehuni së shpejti." home={false} />
         ) : (
           <>
             <section className="home-top" aria-label="Lajmet kryesore">

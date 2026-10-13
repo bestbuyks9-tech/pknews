@@ -104,12 +104,12 @@ export function SecHead({ title, href, hue }: { title: string; href?: string; hu
   );
 }
 
-export function Empty({ title, text }: { title: string; text: string }) {
+export function Empty({ title, text, home = true }: { title: string; text: string; home?: boolean }) {
   return (
     <div className="empty">
       <h2>{title}</h2>
       <p>{text}</p>
-      <Link className="btn" href="/studio">Shkruaj një lajm</Link>
+      {home && <Link className="btn" href="/">Kthehu në ballinë</Link>}
     </div>
   );
 }
