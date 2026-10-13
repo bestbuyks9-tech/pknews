@@ -17,6 +17,7 @@ export function Header({ active, breaking }: { active?: string; breaking?: Post[
           <nav className="topbar-links" aria-label="Lidhje">
             <Link href="/kerko">Kërko</Link>
             <a href="mailto:reklama@orbita.news">Reklamo te ne</a>
+            <Link href="/studio">Redaksia</Link>
           </nav>
         </div>
       </div>
@@ -73,7 +74,7 @@ export function Footer() {
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Orbita. Të gjitha të drejtat e rezervuara.</span>
-          <span><a href="mailto:reklama@orbita.news">Reklama</a></span>
+          <span><a href="mailto:reklama@orbita.news">Reklama</a> · <Link href="/studio">Redaksia</Link></span>
         </div>
       </div>
     </footer>
