@@ -1,67 +1,63 @@
 import { Footer, Header } from "@/components/Chrome";
-import { EmptyOrbit, LeadStory, PostCard, RowStory } from "@/components/PostCard";
+import { Ad, AdBand } from "@/components/Ad";
+import { Card, Empty, LeadStory, MostRead, RowItem, SecHead, TextItem } from "@/components/PostCard";
 import { latestPosts } from "@/lib/posts";
 import { CATEGORIES } from "@/lib/site";
-import Link from "next/link";
 
 export const revalidate = 30;
 
 export default async function Home() {
-  const posts = await latestPosts(40);
+  const posts = await latestPosts(60);
   const lead = posts.find((p) => p.featured) ?? posts[0];
   const rest = posts.filter((p) => p.id !== lead?.id);
-  const side = rest.slice(0, 4);
-  const grid = rest.slice(4, 13);
+  const top = rest.slice(0, 5);
+  const latest = rest.slice(5, 13);
+  const sections = CATEGORIES.map((c) => ({ c, items: posts.filter((p) => p.category === c.slug) })).filter((s) => s.items.length > 0);
 
   return (
     <>
-      <Header />
-      {posts.length > 0 && (
-        <div className="ticker" aria-label="Të fundit">
-          <span className="ticker-label"><i className="pulse" />TANI</span>
-          <div className="ticker-track">
-            <div className="ticker-move">
-              {[...posts.slice(0, 8), ...posts.slice(0, 8)].map((p, i) => (
-                <Link key={i} href={`/lajm/${p.slug}`}>{p.title}</Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-      <main className="wrap">
+      <Header breaking={posts.slice(0, 8)} />
+      <main id="main" className="wrap">
         {!lead ? (
-          <EmptyOrbit title="Orbita është gati për nisje." text="Sapo të publikohet lajmi i parë nga Studio, ai shfaqet këtu brenda pak sekondash." />
+          <Empty title="Ende nuk ka lajme të publikuara." text="Lajmet që publikohen nga redaksia shfaqen këtu menjëherë." />
         ) : (
           <>
-            <section className="hero">
+            <section className="home-top" aria-label="Lajmet kryesore">
               <LeadStory post={lead} />
-              <aside className="hero-side">
-                <div className="eyebrow">Në orbitë tani</div>
-                {side.map((p, i) => <RowStory key={p.id} post={p} index={i} />)}
+              <div className="col-rule">
+                <SecHead title="Kryesoret" />
+                {top.map((p) => <RowItem key={p.id} post={p} />)}
+              </div>
+              <aside className="sidebar">
+                <Ad size="rectangle" />
+                <MostRead title="Lajmet e fundit" posts={posts.slice(0, 6)} />
               </aside>
             </section>
 
-            {grid.length > 0 && (
-              <section className="block">
-                <div className="block-head"><h2>Të fundit</h2><span className="line" /></div>
-                <div className="grid">{grid.map((p) => <PostCard key={p.id} post={p} />)}</div>
+            <AdBand size="billboard" />
+
+            {latest.length > 0 && (
+              <section className="section">
+                <SecHead title="Të rejat" />
+                <div className="grid-4">{latest.map((p) => <Card key={p.id} post={p} />)}</div>
               </section>
             )}
 
-            {CATEGORIES.map((c) => {
-              const items = posts.filter((p) => p.category === c.slug).slice(0, 3);
-              if (items.length === 0) return null;
-              return (
-                <section className="block" key={c.slug} style={{ ["--hue" as string]: c.hue }}>
-                  <div className="block-head">
-                    <h2><i className="dot" />{c.label}</h2>
-                    <span className="line" />
-                    <Link href={`/${c.slug}`} className="more">Të gjitha →</Link>
+            {sections.map(({ c, items }, i) => (
+              <div key={c.slug}>
+                <section className="section">
+                  <SecHead title={c.label} href={`/${c.slug}`} hue={c.hue} />
+                  <div className="cat-block">
+                    <Card post={items[0]} />
+                    <div>
+                      {items.slice(1, 5).map((p) => <TextItem key={p.id} post={p} />)}
+                      {items.length === 1 && <p className="muted">Më shumë lajme nga {c.label} së shpejti.</p>}
+                    </div>
                   </div>
-                  <div className="grid">{items.map((p) => <PostCard key={p.id} post={p} />)}</div>
                 </section>
-              );
-            })}
+                {i % 2 === 1 && i < sections.length - 1 && <AdBand size="leaderboard" />}
+              </div>
+            ))}
           </>
         )}
       </main>

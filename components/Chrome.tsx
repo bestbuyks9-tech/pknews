@@ -1,28 +1,60 @@
 import Link from "next/link";
-import { CATEGORIES, SITE } from "@/lib/site";
+import { CATEGORIES, type Post } from "@/lib/site";
 import { Logo } from "./Logo";
+import { Ad } from "./Ad";
 
-export function Header({ active }: { active?: string }) {
-  const today = new Intl.DateTimeFormat("sq-AL", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Belgrade" }).format(new Date());
+function today() {
+  return new Intl.DateTimeFormat("sq-AL", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Belgrade" }).format(new Date());
+}
+
+export function Header({ active, breaking }: { active?: string; breaking?: Post[] }) {
   return (
-    <header className="header">
-      <div className="wrap header-row">
-        <Link href="/" aria-label="Orbita, ballina"><Logo /></Link>
-        <nav className="nav" aria-label="Rubrikat">
-          {CATEGORIES.map((c) => (
-            <Link key={c.slug} href={`/${c.slug}`} className={active === c.slug ? "on" : ""} style={{ ["--hue" as string]: c.hue }}>
-              {c.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="header-tools">
-          <span className="today"><i className="pulse" />{today}</span>
-          <form action="/kerko" className="search-mini" role="search">
-            <input name="q" placeholder="Kërko…" aria-label="Kërko lajme" />
-          </form>
+    <>
+      <a href="#main" className="skip">Kalo te përmbajtja</a>
+      <div className="topbar">
+        <div className="wrap">
+          <span style={{ textTransform: "capitalize" }}>{today()}</span>
+          <nav className="topbar-links" aria-label="Lidhje">
+            <Link href="/kerko">Kërko</Link>
+            <a href="mailto:reklama@orbita.news">Reklamo te ne</a>
+            <Link href="/studio">Redaksia</Link>
+          </nav>
         </div>
       </div>
-    </header>
+      <header className="masthead">
+        <div className="wrap">
+          <Link href="/" aria-label="Orbita, ballina"><Logo tagline /></Link>
+          <Ad size="leaderboard" label={false} />
+        </div>
+      </header>
+      <nav className="nav" aria-label="Rubrikat">
+        <div className="wrap">
+          <div className="nav-links">
+            <Link href="/" className={!active ? "on" : ""}>Ballina</Link>
+            {CATEGORIES.map((c) => (
+              <Link key={c.slug} href={`/${c.slug}`} className={active === c.slug ? "on" : ""}>{c.label}</Link>
+            ))}
+          </div>
+          <form action="/kerko" className="nav-search" role="search">
+            <input name="q" placeholder="Kërko lajme…" aria-label="Kërko lajme" />
+          </form>
+        </div>
+      </nav>
+      {breaking && breaking.length > 0 && (
+        <div className="ticker">
+          <div className="wrap">
+            <span className="ticker-label">Të fundit</span>
+            <div className="ticker-track">
+              <div className="ticker-move">
+                {[...breaking, ...breaking].map((p, i) => (
+                  <Link key={i} href={`/lajm/${p.slug}`} tabIndex={i >= breaking.length ? -1 : undefined}>{p.title}</Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -33,15 +65,16 @@ export function Footer() {
         <div className="footer-top">
           <div>
             <Logo />
-            <p className="muted footer-tag">{SITE.tagline}.</p>
+            <p style={{ maxWidth: 360, margin: "12px 0 0" }}>Lajme nga Kosova dhe bota — të shpejta, të qarta dhe të verifikuara.</p>
           </div>
-          <div className="footer-links">
+          <nav className="footer-links" aria-label="Rubrikat">
             {CATEGORIES.map((c) => <Link key={c.slug} href={`/${c.slug}`}>{c.label}</Link>)}
-          </div>
+            <Link href="/kerko">Kërko</Link>
+          </nav>
         </div>
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} Orbita</span>
-          <Link href="/studio">Studio ↗</Link>
+          <span>© {new Date().getFullYear()} Orbita. Të gjitha të drejtat e rezervuara.</span>
+          <span><a href="mailto:reklama@orbita.news">Reklama</a> · <Link href="/studio">Redaksia</Link></span>
         </div>
       </div>
     </footer>

@@ -17,4 +17,6 @@ Admins add or remove people under **Ekipi** in the Studio.
 - `supabase/migrations/001_orbita.sql` — database schema
 - `supabase/functions/team` — admin-only edge function to add/remove staff
 
-Sections and their colours live in `lib/site.ts`.
+Sections and their colours live in `lib/site.ts`. Ad spaces are placeholders in `components/Ad.tsx` — replace them with your ad network code (e.g. AdSense) when ready.
+
+

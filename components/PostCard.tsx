@@ -1,82 +1,115 @@
 import Link from "next/link";
-import { category, readingTime, timeAgo, type Post } from "@/lib/site";
-import { OrbitMark } from "./Logo";
+import { category, timeAgo, type Post } from "@/lib/site";
 
-function Cover({ post, className }: { post: Post; className?: string }) {
-  const c = category(post.category);
+export function Thumb({ post }: { post: Post }) {
   return (
-    <div className={`cover ${className ?? ""}`} style={{ ["--hue" as string]: c.hue }}>
+    <div className="thumb">
       {post.cover_url ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={post.cover_url} alt={post.cover_alt || post.title} loading="lazy" />
+        <img src={post.cover_url} alt={post.cover_alt || ""} loading="lazy" />
       ) : (
-        <div className="cover-fallback"><OrbitMark size={56} /></div>
+        <div className="thumb-empty" aria-hidden="true">O</div>
       )}
     </div>
   );
 }
 
-export function Chip({ slug }: { slug: string }) {
+export function Kicker({ slug }: { slug: string }) {
   const c = category(slug);
-  return <span className="chip" style={{ ["--hue" as string]: c.hue }}>{c.label}</span>;
-}
-
-export function Meta({ post }: { post: Post }) {
-  return (
-    <div className="meta">
-      <Chip slug={post.category} />
-      <span>{timeAgo(post.published_at)}</span>
-      <span>· {readingTime(post.body || "")} min</span>
-    </div>
-  );
-}
-
-export function PostCard({ post }: { post: Post }) {
-  return (
-    <Link href={`/lajm/${post.slug}`} className="card">
-      <Cover post={post} />
-      <div className="card-body">
-        <Meta post={post} />
-        <h3>{post.title}</h3>
-        {post.excerpt && <p>{post.excerpt}</p>}
-      </div>
-    </Link>
-  );
+  return <span className="kicker" style={{ ["--hue" as string]: c.hue }}>{c.label}</span>;
 }
 
 export function LeadStory({ post }: { post: Post }) {
   return (
-    <Link href={`/lajm/${post.slug}`} className="lead">
-      <Cover post={post} className="lead-cover" />
-      <div className="lead-shade" />
-      <div className="lead-text">
-        <Meta post={post} />
-        <h1>{post.title}</h1>
+    <Link href={`/lajm/${post.slug}`} className="lead-story">
+      <Thumb post={post} />
+      <div style={{ marginTop: 12 }}>
+        <Kicker slug={post.category} />
+        <h2 className="headline">{post.title}</h2>
+        {post.excerpt && <p>{post.excerpt}</p>}
+        <span className="time">{timeAgo(post.published_at)}</span>
+      </div>
+    </Link>
+  );
+}
+
+export function Card({ post, excerpt = true }: { post: Post; excerpt?: boolean }) {
+  return (
+    <Link href={`/lajm/${post.slug}`} className="card">
+      <Thumb post={post} />
+      <div style={{ marginTop: 10 }}>
+        <Kicker slug={post.category} />
+        <h3 className="headline">{post.title}</h3>
+        {excerpt && post.excerpt && <p>{post.excerpt}</p>}
+      </div>
+    </Link>
+  );
+}
+
+export function RowItem({ post }: { post: Post }) {
+  return (
+    <Link href={`/lajm/${post.slug}`} className="row-item">
+      <Thumb post={post} />
+      <div>
+        <Kicker slug={post.category} />
+        <h3 className="headline">{post.title}</h3>
+        <span className="time">{timeAgo(post.published_at)}</span>
+      </div>
+    </Link>
+  );
+}
+
+export function TextItem({ post }: { post: Post }) {
+  return (
+    <Link href={`/lajm/${post.slug}`} className="text-item">
+      <span className="time">{timeAgo(post.published_at)}</span>
+      <h3 className="headline">{post.title}</h3>
+    </Link>
+  );
+}
+
+export function ListStory({ post }: { post: Post }) {
+  return (
+    <Link href={`/lajm/${post.slug}`} className="list-story">
+      <Thumb post={post} />
+      <div>
+        <Kicker slug={post.category} /> <span className="time">· {timeAgo(post.published_at)}</span>
+        <h2 className="headline">{post.title}</h2>
         {post.excerpt && <p>{post.excerpt}</p>}
       </div>
     </Link>
   );
 }
 
-export function RowStory({ post, index }: { post: Post; index?: number }) {
+export function MostRead({ posts, title = "Më të lexuarat" }: { posts: Post[]; title?: string }) {
+  if (!posts.length) return null;
   return (
-    <Link href={`/lajm/${post.slug}`} className="row-story">
-      {index !== undefined && <span className="row-num">{String(index + 1).padStart(2, "0")}</span>}
-      <div>
-        <Meta post={post} />
-        <h4>{post.title}</h4>
-      </div>
-    </Link>
+    <section className="most-read">
+      <div className="sec-head"><h2>{title}</h2></div>
+      <ol>
+        {posts.map((p) => (
+          <li key={p.id}><Link href={`/lajm/${p.slug}`}><span className="headline">{p.title}</span></Link></li>
+        ))}
+      </ol>
+    </section>
   );
 }
 
-export function EmptyOrbit({ title, text }: { title: string; text: string }) {
+export function SecHead({ title, href, hue }: { title: string; href?: string; hue?: string }) {
+  return (
+    <div className="sec-head" style={hue ? { ["--hue" as string]: hue } : undefined}>
+      <h2>{title}</h2>
+      {href && <Link href={href}>Të gjitha →</Link>}
+    </div>
+  );
+}
+
+export function Empty({ title, text }: { title: string; text: string }) {
   return (
     <div className="empty">
-      <div className="empty-orbit"><span /><span /><span /><OrbitMark size={64} /></div>
       <h2>{title}</h2>
-      <p className="muted">{text}</p>
-      <Link className="btn" href="/studio">Shkruaj lajmin e parë →</Link>
+      <p>{text}</p>
+      <Link className="btn" href="/studio">Shkruaj një lajm</Link>
     </div>
   );
 }

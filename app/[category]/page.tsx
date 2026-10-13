@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Footer, Header } from "@/components/Chrome";
-import { EmptyOrbit, PostCard } from "@/components/PostCard";
+import { Ad } from "@/components/Ad";
+import { Empty, ListStory, MostRead } from "@/components/PostCard";
 import { latestPosts } from "@/lib/posts";
 import { CATEGORIES, category } from "@/lib/site";
 
@@ -23,21 +24,29 @@ export default async function CategoryPage({ params }: Props) {
   const { category: slug } = await params;
   const c = CATEGORIES.find((x) => x.slug === slug);
   if (!c) notFound();
-  const posts = await latestPosts(60, slug);
+  const [posts, latest] = await Promise.all([latestPosts(60, slug), latestPosts(8)]);
   return (
     <>
       <Header active={slug} />
-      <main className="wrap" style={{ ["--hue" as string]: c.hue }}>
+      <main id="main" className="wrap" style={{ ["--hue" as string]: c.hue }}>
         <section className="page-head">
-          <div className="eyebrow"><i className="dot" />Rubrika</div>
           <h1>{c.label}</h1>
-          <p className="muted">{posts.length} {posts.length === 1 ? "artikull" : "artikuj"} në këtë orbitë</p>
+          <p className="muted" style={{ margin: "0 0 14px" }}>{posts.length} {posts.length === 1 ? "artikull" : "artikuj"}</p>
         </section>
-        {posts.length === 0 ? (
-          <EmptyOrbit title="Ende pa lajme këtu." text={`Lajmi i parë në ${c.label} do të shfaqet këtu.`} />
-        ) : (
-          <div className="grid">{posts.map((p) => <PostCard key={p.id} post={p} />)}</div>
-        )}
+        <div className="with-side">
+          <div>
+            {posts.length === 0 ? (
+              <Empty title="Ende pa lajme këtu." text={`Lajmet e para nga ${c.label} do të shfaqen këtu.`} />
+            ) : (
+              posts.map((p) => <ListStory key={p.id} post={p} />)
+            )}
+          </div>
+          <aside className="sidebar">
+            <Ad size="rectangle" />
+            <MostRead title="Lajmet e fundit" posts={latest.filter((p) => p.category !== slug).slice(0, 6)} />
+            <div style={{ position: "sticky", top: 70 }}><Ad size="halfpage" /></div>
+          </aside>
+        </div>
       </main>
       <Footer />
     </>

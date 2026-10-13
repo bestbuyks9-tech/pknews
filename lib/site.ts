@@ -1,6 +1,6 @@
 export const SITE = {
   name: "Orbita",
-  tagline: "Lajmet që lëvizin botën tënde",
+  tagline: "Lajme nga Kosova dhe bota",
   description: "Orbita — lajme nga Kosova dhe bota, të qarta, të shpejta dhe pa zhurmë.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://pknews-dusky.vercel.app",
 };
@@ -11,19 +11,19 @@ export const SUPABASE_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "sb_publishable_564LLK4MbolZAPqykqtJGw_Yef_fXXH";
 
 export const CATEGORIES = [
-  { slug: "kosova", label: "Kosova", hue: "#7cf5d1" },
-  { slug: "politike", label: "Politikë", hue: "#9d8cff" },
-  { slug: "ekonomi", label: "Ekonomi", hue: "#ffd166" },
-  { slug: "bota", label: "Bota", hue: "#6cc8ff" },
-  { slug: "sport", label: "Sport", hue: "#ff7a7a" },
-  { slug: "teknologji", label: "Teknologji", hue: "#5dffa0" },
-  { slug: "kulture", label: "Kulturë", hue: "#ff9de2" },
+  { slug: "kosova", label: "Kosova", hue: "#c8102e" },
+  { slug: "politike", label: "Politikë", hue: "#1f3a93" },
+  { slug: "ekonomi", label: "Ekonomi", hue: "#0b6e4f" },
+  { slug: "bota", label: "Bota", hue: "#0b5cad" },
+  { slug: "sport", label: "Sport", hue: "#b54708" },
+  { slug: "teknologji", label: "Teknologji", hue: "#6b21a8" },
+  { slug: "kulture", label: "Kulturë", hue: "#a3195b" },
 ] as const;
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
 
 export function category(slug: string) {
-  return CATEGORIES.find((c) => c.slug === slug) ?? { slug, label: slug, hue: "#7cf5d1" };
+  return CATEGORIES.find((c) => c.slug === slug) ?? { slug, label: slug, hue: "#c8102e" };
 }
 
 export type Post = {

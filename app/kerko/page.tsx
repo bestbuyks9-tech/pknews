@@ -1,5 +1,6 @@
 import { Footer, Header } from "@/components/Chrome";
-import { PostCard } from "@/components/PostCard";
+import { Ad } from "@/components/Ad";
+import { ListStory } from "@/components/PostCard";
 import { searchPosts } from "@/lib/posts";
 
 export const dynamic = "force-dynamic";
@@ -11,16 +12,19 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   return (
     <>
       <Header />
-      <main className="wrap">
+      <main id="main" className="wrap">
         <section className="page-head">
-          <div className="eyebrow">Kërkimi</div>
+          <h1>Kërko</h1>
           <form action="/kerko" className="search-big" role="search">
-            <input name="q" defaultValue={q} placeholder="Çfarë po kërkon?" autoFocus aria-label="Kërko" />
+            <input name="q" defaultValue={q} placeholder="Shkruaj një fjalë kyçe…" aria-label="Kërko" />
             <button className="btn" type="submit">Kërko</button>
           </form>
-          {q && <p className="muted">{results.length} rezultate për “{q}”</p>}
+          {q && <p className="muted" style={{ margin: "0 0 14px" }}>{results.length} rezultate për “{q}”</p>}
         </section>
-        <div className="grid">{results.map((p) => <PostCard key={p.id} post={p} />)}</div>
+        <div className="with-side">
+          <div>{results.map((p) => <ListStory key={p.id} post={p} />)}</div>
+          <aside className="sidebar"><Ad size="rectangle" /></aside>
+        </div>
       </main>
       <Footer />
     </>

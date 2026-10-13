@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/unbounded";
-import "@fontsource-variable/manrope";
-import "@fontsource-variable/jetbrains-mono";
+import "@fontsource-variable/source-serif-4";
+import "@fontsource-variable/inter";
 import "./globals.css";
 import { SITE } from "@/lib/site";
 
@@ -13,13 +12,12 @@ export const metadata: Metadata = {
   icons: { icon: "/icon.svg" },
 };
 
-export const viewport: Viewport = { themeColor: "#07080c" };
+export const viewport: Viewport = { themeColor: "#c8102e" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="sq">
       <body>
-        <div className="starfield" aria-hidden="true" />
         {children}
       </body>
     </html>

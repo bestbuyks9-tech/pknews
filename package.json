@@ -8,9 +8,8 @@
     "start": "next start"
   },
   "dependencies": {
-    "@fontsource-variable/jetbrains-mono": "^5.1.0",
-    "@fontsource-variable/manrope": "^5.1.0",
-    "@fontsource-variable/unbounded": "^5.1.0",
+    "@fontsource-variable/inter": "^5.1.0",
+    "@fontsource-variable/source-serif-4": "^5.1.0",
     "@supabase/supabase-js": "^2.57.0",
     "@tiptap/extension-image": "^2.11.0",
     "@tiptap/extension-link": "^2.11.0",
