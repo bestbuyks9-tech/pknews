@@ -15,6 +15,8 @@ export const SITE = {
   adskeeper: {
     siteId: process.env.NEXT_PUBLIC_ADSKEEPER_SITE_ID || "1116858",
     widget: process.env.NEXT_PUBLIC_ADSKEEPER_WIDGET || "2099408",
+    /** Shown instead of `widget` on phones (screens up to 760px wide). */
+    mobileWidget: process.env.NEXT_PUBLIC_ADSKEEPER_MOBILE_WIDGET || "2099429",
   },
 };
 
