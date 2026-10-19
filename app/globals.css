@@ -229,3 +229,5 @@ a:hover .headline { color: var(--accent); }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 .ak-slot { margin: 24px 0; font-family: var(--sans); }
+.ak-slot:empty { margin: 0; }
+.sidebar .ak-slot { margin-top: 0; }

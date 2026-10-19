@@ -9,8 +9,9 @@ declare global {
 }
 
 /**
- * AdsKeeper native widget. The site script is loaded once in app/layout.tsx; each widget
- * asks it to fill its box on mount, so it also works after client-side navigation.
+ * AdsKeeper native widget: the dashboard's container code. The site loader is in the <head>
+ * (app/layout.tsx); each widget asks it to fill its box on mount, so it also works after
+ * client-side navigation. An unfilled box takes no space.
  */
 export function AdsKeeper({ widgetId }: { widgetId: string }) {
   useEffect(() => {
@@ -19,10 +20,5 @@ export function AdsKeeper({ widgetId }: { widgetId: string }) {
   }, [widgetId]);
 
   if (!SITE.adskeeper.siteId || !widgetId) return null;
-  return (
-    <div className="ad-slot ak-slot">
-      <span className="ad-label">Reklamë</span>
-      <div key={widgetId} data-type="_mgwidget" data-widget-id={widgetId} />
-    </div>
-  );
+  return <div key={widgetId} className="ak-slot" data-type="_mgwidget" data-widget-id={widgetId} />;
 }

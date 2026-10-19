@@ -105,10 +105,10 @@ export default async function ArticlePage({ params }: Props) {
             )}
             <div className="prose">
               <div dangerouslySetInnerHTML={{ __html: first }} />
-              {second && <div className="ad-wrap">{SITE.adskeeper.inArticle ? <AdsKeeper widgetId={SITE.adskeeper.inArticle} /> : <Ad size="rectangle" />}</div>}
+              {second && <div className="ad-wrap"><Ad size="rectangle" /></div>}
               {second && <div dangerouslySetInnerHTML={{ __html: second }} />}
             </div>
-            {SITE.adskeeper.underArticle && <AdsKeeper widgetId={SITE.adskeeper.underArticle} />}
+            {SITE.adskeeper.siteId && <AdsKeeper widgetId={SITE.adskeeper.widget} />}
           </article>
           <aside className="sidebar" style={{ paddingTop: 20 }}>
             <Ad size="rectangle" />

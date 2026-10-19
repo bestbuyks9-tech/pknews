@@ -8,14 +8,13 @@ export const SITE = {
   /** Google Analytics 4 measurement ID. */
   gaId: process.env.NEXT_PUBLIC_GA_ID || "G-C28DVEWYDZ",
   /**
-   * AdsKeeper native ads. All three IDs come from the widget code in the AdsKeeper dashboard:
-   * siteId is the number in `jsc.adskeeper.com/site/<siteId>.js`, the widget IDs are each
-   * widget's `data-widget-id`. Any slot left empty keeps showing its placeholder.
+   * AdsKeeper native ads, from the widget code in the AdsKeeper dashboard: siteId is the number
+   * in `jsc.adskeeper.com/site/<siteId>.js`, widget is the `data-widget-id`. The widget fills
+   * the in-article, under-article, sidebar and home billboard spaces (see components/Ad.tsx).
    */
   adskeeper: {
     siteId: process.env.NEXT_PUBLIC_ADSKEEPER_SITE_ID || "1116858",
-    underArticle: process.env.NEXT_PUBLIC_ADSKEEPER_UNDER_ARTICLE || "2099408",
-    inArticle: process.env.NEXT_PUBLIC_ADSKEEPER_IN_ARTICLE || "",
+    widget: process.env.NEXT_PUBLIC_ADSKEEPER_WIDGET || "2099408",
   },
 };
 

@@ -1,6 +1,10 @@
+import { AdsKeeper } from "./AdsKeeper";
+import { SITE } from "@/lib/site";
+
 /**
- * Ad placeholder. Replace the inner box with your ad network code
- * (e.g. Google AdSense <ins> tag) when you have one — sizes are standard IAB units.
+ * Ad space. When AdsKeeper is configured (lib/site.ts), rectangle and billboard spaces show the
+ * AdsKeeper native widget and the other sizes are left out; otherwise a dashed placeholder
+ * shows where an ad would go. Sizes are standard IAB units.
  */
 const SIZES = {
   leaderboard: [728, 90],
@@ -12,7 +16,15 @@ const SIZES = {
 
 export type AdSize = keyof typeof SIZES;
 
+/** Ad sizes the AdsKeeper native widget replaces; the rest are hidden while AdsKeeper is on. */
+const ADSKEEPER_SIZES: AdSize[] = ["rectangle", "billboard"];
+
+const adskeeperOn = () => Boolean(SITE.adskeeper.siteId && SITE.adskeeper.widget);
+
 export function Ad({ size, label = true }: { size: AdSize; label?: boolean }) {
+  if (adskeeperOn()) {
+    return ADSKEEPER_SIZES.includes(size) ? <AdsKeeper widgetId={SITE.adskeeper.widget} /> : null;
+  }
   const [w, h] = SIZES[size];
   return (
     <div className="ad-slot">
@@ -26,6 +38,7 @@ export function Ad({ size, label = true }: { size: AdSize; label?: boolean }) {
 }
 
 export function AdBand({ size }: { size: AdSize }) {
+  if (adskeeperOn() && !ADSKEEPER_SIZES.includes(size)) return null;
   return (
     <div className="ad-wrap">
       <Ad size={size} />
