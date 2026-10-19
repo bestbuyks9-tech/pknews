@@ -21,6 +21,29 @@ function visitorId() {
   }
 }
 
+/** Signed-in Studio staff carry a Supabase auth cookie; their own reading isn't counted. */
+function isStaff() {
+  try { return /(^|; )sb-[a-z0-9]+-auth-token/.test(document.cookie); } catch { return false; }
+}
+
+function isBot() {
+  return navigator.webdriver || /bot|crawl|spider|slurp|headless|lighthouse|preview/i.test(navigator.userAgent);
+}
+
+/** External site the reader came from (host only). Only the first view of a visit is an entry. */
+let entered = false;
+function entryReferrer() {
+  if (entered) return { p_entry: false, p_referrer: null };
+  entered = true;
+  let host: string | null = null;
+  try {
+    const ref = document.referrer ? new URL(document.referrer).hostname : "";
+    const bare = (h: string) => h.replace(/^www\./, "");
+    if (ref && bare(ref) !== bare(location.hostname)) host = ref;
+  } catch {}
+  return { p_entry: true, p_referrer: host };
+}
+
 function fmt(n: number) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   return new Intl.NumberFormat("en-US").format(n);
@@ -33,8 +56,14 @@ export function LiveBar() {
 
   useEffect(() => {
     // Count after paint so ads on the page (placeholders and AdsKeeper widgets) are in the DOM.
+    if (isBot() || isStaff()) return;
     const t = setTimeout(() => {
-      db.rpc("track_view", { p_path: path, p_visitor: visitorId(), p_ads: document.querySelectorAll('.ad, [data-type="_mgwidget"]').length }).then(() => {});
+      db.rpc("track_view", {
+        p_path: path,
+        p_visitor: visitorId(),
+        p_ads: document.querySelectorAll('.ad, [data-type="_mgwidget"]').length,
+        ...entryReferrer(),
+      }).then(() => {});
     }, 500);
     return () => clearTimeout(t);
   }, [path]);

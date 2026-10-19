@@ -43,6 +43,7 @@ export default function Studio() {
           <button className={view.kind === "list" ? "on" : ""} onClick={() => setView({ kind: "list" })}>Postimet</button>
           <button className={view.kind === "bulk" ? "on" : ""} onClick={() => setView({ kind: "bulk" })}>Ngarko shumë</button>
           {profile.role === "admin" && <button className={view.kind === "team" ? "on" : ""} onClick={() => setView({ kind: "team" })}>Ekipi</button>}
+          {profile.role === "admin" && <a href="/admin/analytics">Analitika</a>}
           <a href="/" target="_blank">Shiko faqen ↗</a>
         </nav>
         <div className="st-me">
