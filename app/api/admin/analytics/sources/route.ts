@@ -26,7 +26,17 @@ export async function GET() {
     const attempt = s?.last_attempt_at ? Date.parse(s.last_attempt_at) : 0;
     return now - success > STALE_MS && now - attempt > RETRY_MS;
   });
-  if (stale) await collectAll().catch((e) => console.error("analytics collect failed:", e instanceof Error ? e.message : ""));
+  // Errors from this run go to the dashboard too, in case they could not be saved in analytics_sources.
+  const errors: Record<string, string> = {};
+  if (stale) {
+    try {
+      for (const r of await collectAll()) if (r.error) errors[r.source] = r.error;
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Mbledhja dështoi.";
+      console.error("analytics collect failed:", message);
+      for (const name of Object.keys(SUMMARY)) errors[name] = message;
+    }
+  }
 
   const { data: sources } = await db.from("analytics_sources").select("*");
   const latest: Record<string, Record<string, unknown>> = {};
@@ -38,5 +48,5 @@ export async function GET() {
       latest[source][metric] = data;
     }
   }
-  return NextResponse.json({ sources: sources ?? [], latest }, { headers: { "Cache-Control": "no-store" } });
+  return NextResponse.json({ sources: sources ?? [], latest, errors }, { headers: { "Cache-Control": "no-store" } });
 }

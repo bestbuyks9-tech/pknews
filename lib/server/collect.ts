@@ -216,13 +216,15 @@ export async function collectAll() {
       const { rows, warning } = await s.run();
       const { error } = await db.from("analytics_snapshots").insert(rows.map((r) => ({ source: s.name, metric: r.metric, value: r.value, details: r.details ?? null, captured_at: attempt })));
       if (error) throw new Error(`Ruajtja dështoi (${error.code})`);
-      await db.from("analytics_sources").upsert({ source: s.name, last_attempt_at: attempt, last_success_at: attempt, last_error: warning ?? null });
-      return { source: s.name, ok: true };
+      const saved = await db.from("analytics_sources").upsert({ source: s.name, last_attempt_at: attempt, last_success_at: attempt, last_error: warning ?? null });
+      if (saved.error) throw new Error(`Ruajtja dështoi (${saved.error.code || saved.error.message})`);
+      return { source: s.name, ok: true, error: null as string | null };
     } catch (e) {
       const message = e instanceof Error ? e.message : "Gabim i panjohur";
       console.error(`analytics collector ${s.name} failed`, e instanceof HttpError ? e.status : "");
-      await db.from("analytics_sources").upsert({ source: s.name, last_attempt_at: attempt, last_error: message });
-      return { source: s.name, ok: false };
+      const saved = await db.from("analytics_sources").upsert({ source: s.name, last_attempt_at: attempt, last_error: message });
+      // If even the status row can't be saved (wrong service role key), the dashboard still gets the reason.
+      return { source: s.name, ok: false, error: saved.error ? `${message} · Ruajtja dështoi (${saved.error.code || saved.error.message})` : message };
     }
   }));
   // Keep about six months of snapshots.
