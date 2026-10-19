@@ -84,9 +84,14 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .live-stat span { font-size: 12px; color: #9ea3aa; }
 .live-cta { background: var(--accent); color: #fff; font: 700 12.5px var(--sans); padding: 8px 14px; border-radius: 3px; white-space: nowrap; }
 .live-cta:hover { background: var(--accent-dark); }
-@media (max-width: 560px) {
-  .live-stats { gap: 14px; }
-  .live-stat:nth-child(n+3) { display: none; }
+@media (max-width: 760px) {
+  /* Phones: "Live" and the button on one row, the four numbers in an even row underneath. */
+  .livebar .wrap { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px 12px; padding: 10px 0; }
+  .live-cta { grid-row: 1; grid-column: 2; padding: 6px 10px; font-size: 12px; }
+  .live-stats { grid-row: 2; grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .live-stat { flex-direction: column; align-items: flex-start; gap: 3px; white-space: normal; }
+  .live-stat b { font-size: 15px; }
+  .live-stat span { font-size: 11px; line-height: 1.25; }
 }
 @media (prefers-reduced-motion: reduce) { .live-dot i { animation: none; } }
 
