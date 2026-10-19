@@ -72,6 +72,24 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .ticker:hover .ticker-move { animation-play-state: paused; }
 @keyframes tick { to { transform: translateX(-50%); } }
 
+/* ── Live audience bar (for advertisers) ── */
+.livebar { background: var(--ink); color: #e9eaec; border-bottom: 3px solid var(--accent); }
+.livebar .wrap { display: flex; align-items: center; gap: 22px; min-height: 48px; padding: 8px 0; flex-wrap: wrap; }
+.live-dot { display: inline-flex; align-items: center; gap: 8px; font: 800 11px var(--sans); letter-spacing: .12em; text-transform: uppercase; color: #fff; }
+.live-dot i { width: 9px; height: 9px; border-radius: 50%; background: #19a463; animation: live-pulse 1.8s infinite; }
+@keyframes live-pulse { 0% { box-shadow: 0 0 0 0 rgba(25,164,99,.6); } 70%, 100% { box-shadow: 0 0 0 8px rgba(25,164,99,0); } }
+.live-stats { display: flex; gap: 22px; flex-wrap: wrap; flex: 1; min-width: 0; }
+.live-stat { display: flex; align-items: baseline; gap: 7px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.live-stat b { font: 700 17px/1 var(--sans); color: #fff; }
+.live-stat span { font-size: 12px; color: #9ea3aa; }
+.live-cta { background: var(--accent); color: #fff; font: 700 12.5px var(--sans); padding: 8px 14px; border-radius: 3px; white-space: nowrap; }
+.live-cta:hover { background: var(--accent-dark); }
+@media (max-width: 560px) {
+  .live-stats { gap: 14px; }
+  .live-stat:nth-child(n+3) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .live-dot i { animation: none; } }
+
 /* ── Ads ── */
 .ad { display: flex; flex-direction: column; align-items: center; justify-content: center; margin-inline: auto; background: repeating-linear-gradient(45deg, #f3f3f1, #f3f3f1 10px, #eeeeec 10px, #eeeeec 20px); border: 1px dashed var(--line-2); color: #8a8e94; text-align: center; max-width: 100%; }
 .ad b { font: 700 11px var(--sans); letter-spacing: .12em; text-transform: uppercase; }

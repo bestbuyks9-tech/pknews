@@ -1,4 +1,5 @@
 import { Footer, Header } from "@/components/Chrome";
+import { FacebookBox } from "@/components/FacebookBox";
 import { Ad, AdBand } from "@/components/Ad";
 import { Card, Empty, LeadStory, MostRead, RowItem, SecHead, TextItem } from "@/components/PostCard";
 import { latestPosts } from "@/lib/posts";
@@ -30,6 +31,7 @@ export default async function Home() {
               </div>
               <aside className="sidebar">
                 <Ad size="rectangle" />
+                <FacebookBox />
                 <MostRead title="Lajmet e fundit" posts={posts.slice(0, 6)} />
               </aside>
             </section>

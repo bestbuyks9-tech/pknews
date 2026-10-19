@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Footer, Header } from "@/components/Chrome";
+import { FacebookBox } from "@/components/FacebookBox";
 import { Ad } from "@/components/Ad";
 import { Empty, ListStory, MostRead } from "@/components/PostCard";
 import { latestPosts } from "@/lib/posts";
@@ -43,6 +44,7 @@ export default async function CategoryPage({ params }: Props) {
           </div>
           <aside className="sidebar">
             <Ad size="rectangle" />
+            <FacebookBox />
             <MostRead title="Lajmet e fundit" posts={latest.filter((p) => p.category !== slug).slice(0, 6)} />
             <div style={{ position: "sticky", top: 70 }}><Ad size="halfpage" /></div>
           </aside>
