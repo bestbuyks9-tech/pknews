@@ -32,4 +32,4 @@ The AdsKeeper loader (site 1116858) is in the `<head>` of every page, and native
 
 ## Analytics
 Admins open **Analitika** in the Studio sidebar (`/admin/analytics`). The page and its API routes check on the server that the signed-in user is an admin; Studio sessions are kept in cookies for this.
-Article views are logged by `track_view()` (migration `004_site_analytics.sql`) with the article, the referring site (host only) and the device type. No IP addresses are stored, and bots and signed-in staff are skipped.
+Article views are logged by `log_view()` (migration `004_site_analytics.sql`) with the article, the referring site (host only) and the device type. No IP addresses are stored, and bots and signed-in staff are skipped.

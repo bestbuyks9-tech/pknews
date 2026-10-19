@@ -1,6 +1,6 @@
 -- Site analytics for /admin/analytics (phase 1).
 -- page_views gains the article, the referring site (host only) and the device type.
--- Device and bot checks use the request's User-Agent header on the server; no IP is stored.
+-- log_view() replaces track_view() for new page loads. Device and bot checks use the request's User-Agent header on the server; no IP is stored.
 -- analytics_site() serves the dashboard and only answers admins.
 
 alter table public.page_views
@@ -17,10 +17,8 @@ set post_id = p.id
 from public.posts p
 where v.post_id is null and v.path = '/lajm/' || p.slug;
 
--- The old 3-argument version would be ambiguous next to the new one.
-drop function if exists public.track_view(text, text, int);
-
-create or replace function public.track_view(
+-- New tracker under its own name: an overload of track_view() would make 3-argument calls ambiguous.
+create or replace function public.log_view(
   p_path text,
   p_visitor text,
   p_ads int default 0,
@@ -71,8 +69,16 @@ begin
 end;
 $$;
 
-revoke all on function public.track_view(text, text, int, boolean, text) from public;
-grant execute on function public.track_view(text, text, int, boolean, text) to anon, authenticated;
+revoke all on function public.log_view(text, text, int, boolean, text) from public;
+grant execute on function public.log_view(text, text, int, boolean, text) to anon, authenticated;
+
+-- Pages cached before this change still call track_view(); route them through the new tracker.
+create or replace function public.track_view(p_path text, p_visitor text, p_ads int default 0)
+returns void
+language sql
+security definer
+set search_path = ''
+as $$ select public.log_view(p_path, p_visitor, p_ads); $$;
 
 create or replace function public.analytics_site(p_days int default 30)
 returns json
@@ -165,4 +171,5 @@ end;
 $$;
 
 revoke all on function public.analytics_site(int) from public;
+revoke execute on function public.analytics_site(int) from anon;
 grant execute on function public.analytics_site(int) to authenticated;

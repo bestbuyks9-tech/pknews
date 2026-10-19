@@ -58,7 +58,7 @@ export function LiveBar() {
     // Count after paint so ads on the page (placeholders and AdsKeeper widgets) are in the DOM.
     if (isBot() || isStaff()) return;
     const t = setTimeout(() => {
-      db.rpc("track_view", {
+      db.rpc("log_view", {
         p_path: path,
         p_visitor: visitorId(),
         p_ads: document.querySelectorAll('.ad, [data-type="_mgwidget"]').length,
