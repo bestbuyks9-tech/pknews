@@ -12,7 +12,7 @@ export async function latestPosts(limit = 30, cat?: string) {
   let q = db.from("posts").select(LIST).eq("status", "published").order("published_at", { ascending: false }).limit(limit);
   if (cat) q = q.eq("category", cat);
   const { data, error } = await q;
-  if (error) console.error("Orbita: posts failed", error.message);
+  if (error) console.error("Politika Kosovare: posts failed", error.message);
   return safe(data);
 }
 

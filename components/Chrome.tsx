@@ -16,14 +16,14 @@ export function Header({ active, breaking }: { active?: string; breaking?: Post[
           <span style={{ textTransform: "capitalize" }}>{today()}</span>
           <nav className="topbar-links" aria-label="Lidhje">
             <Link href="/kerko">Kërko</Link>
-            <a href="mailto:reklama@orbita.news">Reklamo te ne</a>
+            <a href="mailto:reklama@politikakosovare.com">Reklamo te ne</a>
             <Link href="/studio">Redaksia</Link>
           </nav>
         </div>
       </div>
       <header className="masthead">
         <div className="wrap">
-          <Link href="/" aria-label="Orbita, ballina"><Logo tagline /></Link>
+          <Link href="/" aria-label="Politika Kosovare, ballina"><Logo tagline /></Link>
           <Ad size="leaderboard" label={false} />
         </div>
       </header>
@@ -73,8 +73,8 @@ export function Footer() {
           </nav>
         </div>
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} Orbita. Të gjitha të drejtat e rezervuara.</span>
-          <span><a href="mailto:reklama@orbita.news">Reklama</a> · <Link href="/studio">Redaksia</Link></span>
+          <span>© {new Date().getFullYear()} Politika Kosovare. Të gjitha të drejtat e rezervuara.</span>
+          <span><a href="mailto:reklama@politikakosovare.com">Reklama</a> · <Link href="/studio">Redaksia</Link></span>
         </div>
       </div>
     </footer>
