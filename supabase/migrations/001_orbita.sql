@@ -1,4 +1,4 @@
--- Orbita: replaces the old PK Online `articles` table with `posts`,
+-- Politika Kosovare: replaces the old PK Online `articles` table with `posts`,
 -- adds a public `media` bucket for photo uploads, and staff permissions.
 -- Keeps: public.profiles, private.has_cms_role(), the new-user trigger.
 

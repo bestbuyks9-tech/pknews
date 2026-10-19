@@ -1,4 +1,4 @@
-// Orbita Studio — admin-only team management (create / remove staff accounts).
+// Politika Kosovare Studio — admin-only team management (create / remove staff accounts).
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const cors = {
