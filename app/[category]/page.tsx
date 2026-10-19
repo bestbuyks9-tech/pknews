@@ -17,7 +17,7 @@ type Props = { params: Promise<{ category: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category: slug } = await params;
-  return { title: category(slug).label, description: `Lajmet më të fundit nga rubrika ${category(slug).label} në Orbita.` };
+  return { title: category(slug).label, description: `Lajmet më të fundit nga rubrika ${category(slug).label} në Politika Kosovare.` };
 }
 
 export default async function CategoryPage({ params }: Props) {

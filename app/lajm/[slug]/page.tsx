@@ -73,7 +73,7 @@ export default async function ArticlePage({ params }: Props) {
     image: post.cover_url ? [post.cover_url] : undefined,
     datePublished: post.published_at,
     dateModified: post.updated_at,
-    author: [{ "@type": post.author_name ? "Person" : "Organization", name: post.author_name || "Redaksia Orbita" }],
+    author: [{ "@type": post.author_name ? "Person" : "Organization", name: post.author_name || "Redaksia Politika Kosovare" }],
     publisher: { "@type": "Organization", name: SITE.name },
   };
 
@@ -90,7 +90,7 @@ export default async function ArticlePage({ params }: Props) {
             <h1>{post.title}</h1>
             {post.excerpt && <p className="dek">{post.excerpt}</p>}
             <div className="byline">
-              <span>Nga <strong>{post.author_name || "Redaksia Orbita"}</strong></span>
+              <span>Nga <strong>{post.author_name || "Redaksia Politika Kosovare"}</strong></span>
               <span className="muted">{formatDate(post.published_at)} · {readingTime(post.body)} min lexim</span>
               <ShareBar url={url} title={post.title} />
             </div>

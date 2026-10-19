@@ -1,4 +1,4 @@
-# Orbita
+# Politika Kosovare
 
 News site built with Next.js (App Router) on Vercel, with Supabase for posts, photos and staff logins.
 

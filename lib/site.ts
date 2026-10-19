@@ -1,8 +1,8 @@
 export const SITE = {
-  name: "Orbita",
+  name: "Politika Kosovare",
   tagline: "Lajme nga Kosova dhe bota",
-  description: "Orbita — lajme nga Kosova dhe bota, të qarta, të shpejta dhe pa zhurmë.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://pknews-dusky.vercel.app",
+  description: "Politika Kosovare — lajme nga Kosova dhe bota, të qarta, të shpejta dhe pa zhurmë.",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.politikakosovare.com",
 };
 
 export const SUPABASE_URL =
