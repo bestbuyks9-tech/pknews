@@ -1,8 +1,9 @@
 "use client";
-import { createClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
 import { SUPABASE_KEY, SUPABASE_URL } from "./site";
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+// Session lives in cookies (not localStorage) so the server can check who is signed in on /admin pages.
+export const supabase = createBrowserClient(SUPABASE_URL, SUPABASE_KEY);
 
 export type Profile = { user_id: string; email: string | null; display_name: string | null; role: "admin" | "manager" | "editor" };
 
