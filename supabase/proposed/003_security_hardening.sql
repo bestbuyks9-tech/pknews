@@ -1,4 +1,4 @@
--- PROPOSED — NOT APPLIED. Review before running in the Supabase SQL editor.
+-- PROPOSED — item 1 applied, items 2-3 NOT APPLIED. Review before running in the Supabase SQL editor.
 -- This Supabase project's auth is shared with other apps, so each change below
 -- is scoped to the newsroom tables/bucket only and leaves other apps alone.
 
@@ -9,8 +9,17 @@
 --    then write drafts, upload to the public media bucket and read staff emails.
 --    The Studio's "Shto anëtar" button already creates the profile with the
 --    chosen role through the team edge function, so the trigger is not needed.
-drop trigger if exists on_auth_user_created_cms on auth.users;
-drop function if exists public.handle_new_cms_user();
+--    APPLIED 2026-10-19 as migration "disable_auto_cms_profile": the trigger
+--    function was replaced with a no-op (a DROP timed out in the connector).
+--    To remove it fully later:
+--      drop trigger if exists on_auth_user_created_cms on auth.users;
+--      drop function if exists public.handle_new_cms_user();
+create or replace function public.handle_new_cms_user()
+returns trigger language plpgsql security definer set search_path to 'pg_catalog' as $$
+begin
+  return new;
+end;
+$$;
 
 -- 2) Only admins need to see the whole team list (emails). Journalists and
 --    editors-in-chief keep reading their own profile via the existing
