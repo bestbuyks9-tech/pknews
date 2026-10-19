@@ -55,7 +55,7 @@ export default function Studio() {
       <main className="st-main">
         {view.kind === "list" && <PostList profile={profile} onOpen={(id) => setView({ kind: "edit", id })} onNew={() => setView({ kind: "edit", id: null })} />}
         {view.kind === "edit" && <Editor key={view.id ?? "new"} id={view.id} profile={profile} onClose={() => setView({ kind: "list" })} onSaved={(id) => setView({ kind: "edit", id })} />}
-        {view.kind === "team" && <Team me={profile} />}
+        {view.kind === "team" && <Team me={profile} onMeChange={setProfile} />}
         {view.kind === "bulk" && <Bulk profile={profile} />}
       </main>
     </div>
