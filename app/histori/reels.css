@@ -36,9 +36,6 @@
 .reels-nav button:hover:not(:disabled) { background: var(--accent); }
 .reels-nav button:disabled { opacity: .3; cursor: default; }
 
-.reels-empty { height: 100dvh; display: grid; place-content: center; text-align: center; padding: 0 24px; }
-.reels-empty h2 { font: 800 28px/1.2 var(--serif); margin: 0 0 8px; }
-.reels-empty p { color: #b9bdc3; margin: 0 auto 22px; max-width: 40ch; }
 
 @media (max-width: 760px) {
   .reels-nav { display: none; }
@@ -46,3 +43,11 @@
 @media (prefers-reduced-motion: reduce) {
   .reels { scroll-behavior: auto; }
 }
+
+/* Placeholder slides, shown until real Reels exist */
+.reel-ph { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: radial-gradient(120% 80% at 50% 30%, #2a3442, #0d1117 70%); }
+.reel-ph-1 { background: radial-gradient(120% 80% at 50% 30%, #4a1620, #0d0a0b 70%); }
+.reel-ph-2 { background: radial-gradient(120% 80% at 50% 30%, #3b3320, #0e0d0a 70%); }
+.reel-ph b { font: 800 clamp(84px, 24vw, 150px)/1 var(--serif); color: #f2c14e; letter-spacing: -0.02em; border-bottom: 5px solid var(--accent); padding-bottom: 8px; }
+.reel-ph-tag { font: 800 12px var(--sans); letter-spacing: .16em; text-transform: uppercase; background: var(--accent); padding: 6px 10px; border-radius: 2px; }
+.reel-info.full { right: 0; }

@@ -4,8 +4,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Reel } from "@/lib/reels";
 import { SITE } from "@/lib/site";
 
+// Shown until the first real Reels are in the database, so the page already looks and swipes like the finished feed.
+const PLACEHOLDERS: Reel[] = [
+  { year: "1878", title: "Histori e re së shpejti", question: "Rrëshqit lart për historinë tjetër." },
+  { year: "1912", title: "Çdo ditë, dy histori shqiptare", question: "Video të shkurtra për ngjarjet që ndërtuan Kosovën dhe Shqipërinë." },
+  { year: "1999", title: "Ndiqni Politika Kosovare", question: "Videot e para po vijnë. Rikthehuni së shpejti." },
+].map((p, i) => ({
+  id: `placeholder-${i}`, slug: `placeholder-${i}`, title: p.title, question: p.question, caption: p.year,
+  video_url: "", poster_url: null, duration_s: null, facebook_url: null, published_at: "",
+}));
+
 /** Full-screen vertical feed: one Reel per screen, snap-scroll or swipe to the next, only the visible one plays. */
-export function ReelFeed({ reels }: { reels: Reel[] }) {
+export function ReelFeed({ reels: data }: { reels: Reel[] }) {
+  const placeholder = data.length === 0;
+  const reels = placeholder ? PLACEHOLDERS : data;
   const feed = useRef<HTMLDivElement>(null);
   const videos = useRef<(HTMLVideoElement | null)[]>([]);
   const [active, setActive] = useState(0);
@@ -54,8 +66,9 @@ export function ReelFeed({ reels }: { reels: Reel[] }) {
     setPaused(false);
     setOpen(null);
     const r = reels[active];
-    if (r && active > 0) history.replaceState(null, "", `#${r.slug}`);
-    else if (r) history.replaceState(null, "", location.pathname);
+    if (!r?.video_url) return;
+    if (active > 0) history.replaceState(null, "", `#${r.slug}`);
+    else history.replaceState(null, "", location.pathname);
   }, [active, reels]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -104,13 +117,7 @@ export function ReelFeed({ reels }: { reels: Reel[] }) {
         <h1>Histori</h1>
       </header>
 
-      {reels.length === 0 ? (
-        <div className="reels-empty">
-          <h2>Videot e para po vijnë.</h2>
-          <p>Çdo ditë shtojmë dy histori të reja. Rikthehuni së shpejti.</p>
-          <Link href="/" className="btn">Kthehu te ballina</Link>
-        </div>
-      ) : (
+      {(
         <div className="reels" ref={feed}>
           {reels.map((r, i) => {
             const near = Math.abs(i - active) <= 1;
@@ -118,6 +125,12 @@ export function ReelFeed({ reels }: { reels: Reel[] }) {
               <section key={r.id} className="reel" data-i={i} id={r.slug} aria-label={r.title}>
                 {r.poster_url && <div className="reel-bg" style={{ backgroundImage: `url(${r.poster_url})` }} aria-hidden="true" />}
                 <div className="reel-frame">
+                  {placeholder ? (
+                    <div className={`reel-ph reel-ph-${i}`}>
+                      <span className="reel-ph-tag">Së shpejti</span>
+                      <b>{r.caption}</b>
+                    </div>
+                  ) : (<>
                   <video
                     ref={(el) => { videos.current[i] = el; }}
                     src={near ? r.video_url : undefined}
@@ -137,11 +150,12 @@ export function ReelFeed({ reels }: { reels: Reel[] }) {
                   {i === active && muted && !paused && (
                     <button className="reel-sound-hint" onClick={() => setMuted(false)}>🔇 Prek për zë</button>
                   )}
+                  </>)}
 
-                  <div className="reel-info">
+                  <div className={`reel-info${placeholder ? " full" : ""}`}>
                     <h2>{r.title}</h2>
                     {r.question && <p className="reel-q">{r.question}</p>}
-                    {r.caption && (
+                    {r.caption && !placeholder && (
                       <>
                         <p className={`reel-caption${open === r.id ? " open" : ""}`}>{r.caption}</p>
                         <button className="reel-more" onClick={() => setOpen(open === r.id ? null : r.id)}>
@@ -151,7 +165,7 @@ export function ReelFeed({ reels }: { reels: Reel[] }) {
                     )}
                   </div>
 
-                  <div className="reel-actions">
+                  {!placeholder && <div className="reel-actions">
                     <button onClick={() => setMuted((m) => !m)} aria-label={muted ? "Ndiz zërin" : "Fik zërin"}>
                       <span>{muted ? "🔇" : "🔊"}</span><small>Zëri</small>
                     </button>
@@ -163,7 +177,7 @@ export function ReelFeed({ reels }: { reels: Reel[] }) {
                         <span>💬</span><small>Komento</small>
                       </a>
                     )}
-                  </div>
+                  </div>}
 
                   <div className="reel-progress" aria-hidden="true"><i /></div>
                 </div>
