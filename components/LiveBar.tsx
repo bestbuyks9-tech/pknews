@@ -32,9 +32,9 @@ export function LiveBar() {
   const [stats, setStats] = useState<Stats | null>(null);
 
   useEffect(() => {
-    // Count after paint so ads on the page are in the DOM.
+    // Count after paint so ads on the page (placeholders and AdsKeeper widgets) are in the DOM.
     const t = setTimeout(() => {
-      db.rpc("track_view", { p_path: path, p_visitor: visitorId(), p_ads: document.querySelectorAll(".ad").length }).then(() => {});
+      db.rpc("track_view", { p_path: path, p_visitor: visitorId(), p_ads: document.querySelectorAll('.ad, [data-type="_mgwidget"]').length }).then(() => {});
     }, 500);
     return () => clearTimeout(t);
   }, [path]);
