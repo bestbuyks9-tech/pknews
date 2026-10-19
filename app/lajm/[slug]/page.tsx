@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import sanitizeHtml from "sanitize-html";
 import { Footer, Header } from "@/components/Chrome";
+import { FacebookBox } from "@/components/FacebookBox";
 import { Ad } from "@/components/Ad";
 import { Card, Kicker, MostRead, SecHead } from "@/components/PostCard";
 import { ShareBar } from "@/components/ShareBar";
@@ -109,6 +110,7 @@ export default async function ArticlePage({ params }: Props) {
           </article>
           <aside className="sidebar" style={{ paddingTop: 20 }}>
             <Ad size="rectangle" />
+            <FacebookBox />
             <MostRead title="Lajmet e fundit" posts={latest.filter((p) => p.id !== post.id).slice(0, 6)} />
             <div style={{ position: "sticky", top: 70 }}><Ad size="halfpage" /></div>
           </aside>

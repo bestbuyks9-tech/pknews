@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CATEGORIES, type Post } from "@/lib/site";
 import { Logo } from "./Logo";
 import { Ad } from "./Ad";
+import { LiveBar } from "./LiveBar";
 
 function today() {
   return new Intl.DateTimeFormat("sq-AL", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Belgrade" }).format(new Date());
@@ -40,6 +41,7 @@ export function Header({ active, breaking }: { active?: string; breaking?: Post[
           </form>
         </div>
       </nav>
+      <LiveBar />
       {breaking && breaking.length > 0 && (
         <div className="ticker">
           <div className="wrap">

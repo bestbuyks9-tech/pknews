@@ -3,6 +3,10 @@ export const SITE = {
   tagline: "Lajme nga Kosova dhe bota",
   description: "Politika Kosovare — lajme nga Kosova dhe bota, të qarta, të shpejta dhe pa zhurmë.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.politikakosovare.com",
+  /** Full Facebook page URL, e.g. https://www.facebook.com/politikakosovare. The sidebar box stays hidden while empty. */
+  facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || "",
+  /** Google Analytics 4 measurement ID. */
+  gaId: process.env.NEXT_PUBLIC_GA_ID || "G-C28DVEWYDZ",
 };
 
 export const SUPABASE_URL =

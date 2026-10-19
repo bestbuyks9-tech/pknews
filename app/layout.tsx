@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "@fontsource-variable/source-serif-4";
 import "@fontsource-variable/inter";
 import "./globals.css";
@@ -19,6 +20,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="sq">
       <body>
         {children}
+        {SITE.gaId && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${SITE.gaId}`} strategy="afterInteractive" />
+            <Script id="gtag-init" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${SITE.gaId}');`}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );
