@@ -23,6 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Metricool web analytics pixel */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="https://tracker.metricool.com/c3po.jpg?hash=cba95736f786e3ebd10b8e1ceab9936e" alt="" width={1} height={1} style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} aria-hidden="true" />
+        {SITE.adskeeper.siteId && (
+          <Script src={`https://jsc.adskeeper.com/site/${SITE.adskeeper.siteId}.js`} strategy="afterInteractive" />
+        )}
         {SITE.gaId && (
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${SITE.gaId}`} strategy="afterInteractive" />
