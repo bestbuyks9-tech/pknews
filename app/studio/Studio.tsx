@@ -100,6 +100,16 @@ function PostList({ profile, onOpen, onNew }: { profile: Profile; onOpen: (id: s
   }, []);
   useEffect(() => { load(); }, [load]);
 
+  // Same rule as the posts delete policy: managers and admins delete anything, editors only their own unpublished posts.
+  const canDelete = (p: Post) => profile.role !== "editor" || (p.author_id === profile.user_id && p.status !== "published");
+
+  async function remove(p: Post) {
+    if (!confirm(`Ta fshij përgjithmonë "${p.title || "Pa titull"}"?`)) return;
+    const { error } = await supabase.from("posts").delete().eq("id", p.id);
+    if (error) alert("Nuk u fshi: " + error.message);
+    else setPosts((all) => (all ?? []).filter((x) => x.id !== p.id));
+  }
+
   const shown = useMemo(() => (posts ?? []).filter((p) =>
     (filter === "all" || p.status === filter) && (!q || p.title.toLowerCase().includes(q.toLowerCase()))), [posts, filter, q]);
 
@@ -147,6 +157,9 @@ function PostList({ profile, onOpen, onNew }: { profile: Profile; onOpen: (id: s
               </div>
               {p.featured && <span className="st-badge feat">★ Kryesor</span>}
               <span className={`st-badge ${p.status}`}>{STATUS_LABEL[p.status]}</span>
+              {canDelete(p) && (
+                <button className="st-del" title="Fshije postimin" onClick={(e) => { e.stopPropagation(); remove(p); }}>Fshije</button>
+              )}
             </li>
           ))}
         </ul>

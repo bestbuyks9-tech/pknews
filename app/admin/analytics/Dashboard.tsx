@@ -1,8 +1,11 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import Donut from "./Donut";
 import { Logo } from "@/components/Logo";
 import { category } from "@/lib/site";
+import Usage, { type UsageData } from "./Usage";
+import { dateTime, dayLabel, num, SERIES } from "./format";
 
 type Slice = { name: string; views: number };
 type SiteStats = {
@@ -18,8 +21,6 @@ type SiteStats = {
 };
 
 const RANGES = [7, 30, 90] as const;
-// Categorical slots in fixed order (validated palette); a source keeps its colour whatever its rank.
-const SERIES = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"];
 const SOURCE_COLOR: Record<string, string> = {
   Direkt: SERIES[0], Facebook: SERIES[1], Google: SERIES[2], Instagram: SERIES[4],
   "Kërkues të tjerë": SERIES[3], X: SERIES[6], TikTok: SERIES[7], YouTube: SERIES[5], "Faqe të tjera": "#8a8d91",
@@ -27,22 +28,40 @@ const SOURCE_COLOR: Record<string, string> = {
 const DEVICE_LABEL: Record<string, string> = { mobile: "Celular", desktop: "Kompjuter", tablet: "Tablet" };
 const DEVICE_COLOR: Record<string, string> = { mobile: SERIES[0], desktop: SERIES[1], tablet: SERIES[2] };
 
-// Albanian formats written out by hand: some browsers ship without "sq" locale data and fall back to English.
-const MONTHS = ["janar", "shkurt", "mars", "prill", "maj", "qershor", "korrik", "gusht", "shtator", "tetor", "nëntor", "dhjetor"];
-const num = (n: number) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-const dayLabel = (iso: string) => { const [, m, d] = iso.split("-").map(Number); return `${d} ${MONTHS[m - 1].slice(0, 3)}`; };
-const dateTime = (iso: string) => {
-  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "Europe/Belgrade" })
-    .formatToParts(new Date(iso)).map((p) => [p.type, p.value]));
-  return `${parts.day} ${MONTHS[Number(parts.month) - 1]}, ora ${parts.hour}:${parts.minute}`;
-};
-
 export default function Dashboard() {
   const [days, setDays] = useState<(typeof RANGES)[number]>(30);
   const [site, setSite] = useState<SiteStats | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [loadedAt, setLoadedAt] = useState<string | null>(null);
+  const [usage, setUsage] = useState<UsageData | null>(null);
+  const [usageError, setUsageError] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadUsage = useCallback(async () => {
+    setUsageError("");
+    try {
+      const res = await fetch("/api/admin/analytics/sources", { cache: "no-store" });
+      if (res.status === 401 || res.status === 403) { location.href = "/studio"; return; }
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || "Gabim");
+      setUsage(body as UsageData);
+    } catch (e) {
+      setUsageError(e instanceof Error ? e.message : "Përdorimi nuk u ngarkua.");
+    }
+  }, []);
+
+  useEffect(() => { loadUsage(); }, [loadUsage]);
+
+  async function refreshAll() {
+    setRefreshing(true);
+    try {
+      await fetch("/api/admin/analytics/refresh", { method: "POST" });
+    } finally {
+      await Promise.all([load(days), loadUsage()]);
+      setRefreshing(false);
+    }
+  }
 
   const load = useCallback(async (d: number) => {
     setBusy(true); setError("");
@@ -81,7 +100,7 @@ export default function Dashboard() {
                 <button key={r} className={days === r ? "on" : ""} aria-pressed={days === r} onClick={() => setDays(r)}>{r} ditë</button>
               ))}
             </div>
-            <button className="an-btn" onClick={() => load(days)} disabled={busy}>{busy ? "Duke rifreskuar…" : "↻ Rifresko tani"}</button>
+            <button className="an-btn" onClick={refreshAll} disabled={busy || refreshing}>{refreshing ? "Duke rifreskuar…" : "↻ Rifresko tani"}</button>
           </div>
         </div>
 
@@ -114,7 +133,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="an-grid">
+            <div className="an-grid site">
               <div className="an-panel">
                 <h3>10 lajmet më të lexuara <small>({site.days} ditë)</small></h3>
                 {site.top.length === 0 ? <p className="muted">Ende pa shikime në lajme.</p> : (
@@ -158,6 +177,9 @@ export default function Dashboard() {
         )}
 
         {!site && !error && <div className="an-loading"><span className="an-spinner" /></div>}
+
+        {usageError && <p className="an-error" role="alert">⚠ {usageError}</p>}
+        {usage ? <Usage data={usage} /> : !usageError && <div className="an-loading small"><span className="an-spinner" /></div>}
       </main>
     </div>
   );
@@ -176,41 +198,6 @@ function Card({ label, value, prev, vs }: { label: string; value: number; prev: 
           {change > 0 ? "▲" : change < 0 ? "▼" : "•"} {Math.abs(change)}% <small>krahasuar me {vs}</small>
         </span>
       )}
-    </div>
-  );
-}
-
-function Donut({ title, note, rows, extra }: { title: string; note?: string; rows: { name: string; views: number; color: string }[]; extra?: React.ReactNode }) {
-  const total = rows.reduce((a, r) => a + r.views, 0);
-  return (
-    <div className="an-panel">
-      <h3>{title}</h3>
-      {note && <p className="muted an-note">{note}</p>}
-      {total === 0 ? <p className="muted">Ende pa të dhëna.</p> : (
-        <div className="an-donut">
-          <div className="an-donut-chart">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={rows} dataKey="views" nameKey="name" innerRadius="62%" outerRadius="100%" stroke="#fff" strokeWidth={2} isAnimationActive={false}>
-                  {rows.map((r) => <Cell key={r.name} fill={r.color} />)}
-                </Pie>
-                <Tooltip formatter={(v, n) => [`${num(Number(v))} (${Math.round((Number(v) / total) * 100)}%)`, n]} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <ul className="an-legend">
-            {rows.map((r) => (
-              <li key={r.name}>
-                <i style={{ background: r.color }} aria-hidden="true" />
-                <span>{r.name}</span>
-                <b>{Math.round((r.views / total) * 100)}%</b>
-                <small>{num(r.views)}</small>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {extra}
     </div>
   );
 }
