@@ -43,6 +43,9 @@ Deno.serve(async (req) => {
 
   if (body.action === "remove") {
     if (body.user_id === who.user.id) return json({ error: "Nuk mund ta heqësh veten." }, 400);
+    // This Supabase project's auth is shared with other apps: only ever delete accounts that are on the newsroom team.
+    const { data: member } = await admin.from("profiles").select("user_id").eq("user_id", String(body.user_id)).maybeSingle();
+    if (!member) return json({ error: "Ky person nuk është në ekip." }, 404);
     await admin.from("profiles").delete().eq("user_id", String(body.user_id));
     const { error } = await admin.auth.admin.deleteUser(String(body.user_id));
     if (error) return json({ error: error.message }, 400);

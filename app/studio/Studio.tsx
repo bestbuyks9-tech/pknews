@@ -14,7 +14,7 @@ const STATUS_LABEL: Record<Post["status"], string> = { draft: "Draft", review: "
 export default function Studio() {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<Profile | null | undefined>(undefined);
   const [view, setView] = useState<View>({ kind: "list" });
 
   useEffect(() => {
@@ -24,14 +24,15 @@ export default function Studio() {
   }, []);
 
   useEffect(() => {
-    if (!session) { setProfile(null); return; }
+    if (!session) { setProfile(undefined); return; }
     supabase.from("profiles").select("user_id,email,display_name,role").eq("user_id", session.user.id).single()
       .then(({ data }) => setProfile((data as Profile) ?? null));
   }, [session]);
 
   if (!ready) return <div className="st-center"><span className="st-spinner" /></div>;
   if (!session) return <Login />;
-  if (!profile) return <div className="st-center"><span className="st-spinner" /></div>;
+  if (profile === undefined) return <div className="st-center"><span className="st-spinner" /></div>;
+  if (!profile) return <NoAccess />;
 
   return (
     <div className="st-shell">
@@ -54,6 +55,19 @@ export default function Studio() {
         {view.kind === "edit" && <Editor key={view.id ?? "new"} id={view.id} profile={profile} onClose={() => setView({ kind: "list" })} onSaved={(id) => setView({ kind: "edit", id })} />}
         {view.kind === "team" && <Team me={profile} />}
       </main>
+    </div>
+  );
+}
+
+function NoAccess() {
+  return (
+    <div className="st-login">
+      <div className="st-login-card">
+        <Logo />
+        <h1>Nuk ke akses në Studio.</h1>
+        <p className="muted">Kjo llogari nuk është pjesë e redaksisë. Kërkoji një administratori të të shtojë në ekip.</p>
+        <button className="st-btn primary" onClick={() => supabase.auth.signOut()}>Dil</button>
+      </div>
     </div>
   );
 }
