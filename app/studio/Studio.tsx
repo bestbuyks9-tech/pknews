@@ -6,8 +6,9 @@ import { supabase, roleLabel, type Profile } from "@/lib/browser";
 import { Logo } from "@/components/Logo";
 import Editor from "./Editor";
 import Team from "./Team";
+import Bulk from "./Bulk";
 
-type View = { kind: "list" } | { kind: "edit"; id: string | null } | { kind: "team" };
+type View = { kind: "list" } | { kind: "edit"; id: string | null } | { kind: "team" } | { kind: "bulk" };
 
 const STATUS_LABEL: Record<Post["status"], string> = { draft: "Draft", review: "Për rishikim", published: "Publikuar" };
 
@@ -40,6 +41,7 @@ export default function Studio() {
         <button className="st-new" onClick={() => setView({ kind: "edit", id: null })}>＋ Postim i ri</button>
         <nav>
           <button className={view.kind === "list" ? "on" : ""} onClick={() => setView({ kind: "list" })}>Postimet</button>
+          <button className={view.kind === "bulk" ? "on" : ""} onClick={() => setView({ kind: "bulk" })}>Ngarko shumë</button>
           {profile.role === "admin" && <button className={view.kind === "team" ? "on" : ""} onClick={() => setView({ kind: "team" })}>Ekipi</button>}
           <a href="/" target="_blank">Shiko faqen ↗</a>
         </nav>
@@ -53,6 +55,7 @@ export default function Studio() {
         {view.kind === "list" && <PostList profile={profile} onOpen={(id) => setView({ kind: "edit", id })} onNew={() => setView({ kind: "edit", id: null })} />}
         {view.kind === "edit" && <Editor key={view.id ?? "new"} id={view.id} profile={profile} onClose={() => setView({ kind: "list" })} onSaved={(id) => setView({ kind: "edit", id })} />}
         {view.kind === "team" && <Team me={profile} />}
+        {view.kind === "bulk" && <Bulk profile={profile} />}
       </main>
     </div>
   );
