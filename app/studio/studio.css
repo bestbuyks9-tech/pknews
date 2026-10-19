@@ -137,6 +137,9 @@ kbd { font: 600 11px var(--mono); padding: 1px 6px; border-radius: 5px; border: 
 .team-list li > div { flex: 1; min-width: 0; display: flex; flex-direction: column; font-size: 14px; }
 .team-list small { color: var(--muted); }
 .team-list select { width: auto; padding: 7px 10px; font-size: 13px; }
+.team-rename { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; }
+.team-rename input { flex: 1; min-width: 0; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line-2); background: #fff; outline: none; font-size: 14px; }
+.team-rename input:focus { border-color: var(--plasma); box-shadow: 0 0 0 4px rgba(200,16,46,.08); }
 
 /* Bulk */
 .small { font-size: 13px; }
