@@ -1,0 +1,48 @@
+/* ── /histori: full-screen vertical Reels feed ── */
+.reels-page { position: fixed; inset: 0; background: #000; color: #fff; overflow: hidden; }
+.reels-top { position: absolute; z-index: 5; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 12px; padding: 14px 16px; pointer-events: none; background: linear-gradient(#0009, transparent); }
+.reels-top > * { pointer-events: auto; }
+.reels-top h1 { margin: 0; font: 800 18px/1 var(--serif); letter-spacing: -0.01em; text-shadow: 0 1px 6px #0008; }
+.reels-home .logo-mark { width: 34px; height: 34px; font-size: 15px; }
+
+.reels { height: 100dvh; overflow-y: auto; scroll-snap-type: y mandatory; overscroll-behavior: contain; scrollbar-width: none; }
+.reels::-webkit-scrollbar { display: none; }
+.reel { position: relative; height: 100dvh; scroll-snap-align: start; scroll-snap-stop: always; display: grid; place-items: center; overflow: hidden; }
+.reel-bg { position: absolute; inset: -40px; background: center / cover no-repeat; filter: blur(36px) brightness(.45); }
+.reel-frame { position: relative; height: 100%; width: min(100vw, calc(100dvh * 9 / 16)); background: #000; }
+.reel-frame video { width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer; }
+
+.reel-play { position: absolute; inset: 0; margin: auto; width: 76px; height: 76px; border-radius: 50%; border: 0; background: #0008; color: #fff; font-size: 30px; cursor: pointer; }
+.reel-sound-hint { position: absolute; top: 66px; left: 50%; transform: translateX(-50%); border: 0; border-radius: 999px; background: #000a; color: #fff; padding: 8px 14px; font: 700 13px var(--sans); cursor: pointer; white-space: nowrap; }
+
+.reel-info { position: absolute; left: 0; right: 72px; bottom: 0; padding: 60px 16px 22px; background: linear-gradient(transparent, #000c 55%); }
+.reel-info h2 { margin: 0 0 6px; font: 800 18px/1.25 var(--serif); text-wrap: balance; }
+.reel-q { margin: 0 0 6px; font: 600 14px/1.4 var(--sans); color: #f2c14e; }
+.reel-caption { margin: 0; font-size: 13.5px; line-height: 1.45; color: #e3e4e6; white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.reel-caption.open { display: block; max-height: 42dvh; overflow-y: auto; }
+.reel-more { border: 0; background: none; color: #fff; padding: 4px 0 0; font: 700 13px var(--sans); cursor: pointer; }
+
+.reel-actions { position: absolute; right: 8px; bottom: 96px; display: flex; flex-direction: column; gap: 16px; align-items: center; }
+.reel-actions button, .reel-actions a { display: flex; flex-direction: column; align-items: center; gap: 3px; border: 0; background: none; color: #fff; cursor: pointer; padding: 0; width: 60px; }
+.reel-actions span { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: #0007; font-size: 20px; }
+.reel-actions button:hover span, .reel-actions a:hover span { background: var(--accent); }
+.reel-actions small { font: 700 11px var(--sans); text-shadow: 0 1px 4px #000; }
+
+.reel-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #ffffff33; }
+.reel-progress i { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); }
+
+.reels-nav { position: absolute; z-index: 5; right: 24px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; }
+.reels-nav button { width: 44px; height: 44px; border-radius: 50%; border: 0; background: #ffffff1f; color: #fff; font-size: 18px; cursor: pointer; }
+.reels-nav button:hover:not(:disabled) { background: var(--accent); }
+.reels-nav button:disabled { opacity: .3; cursor: default; }
+
+.reels-empty { height: 100dvh; display: grid; place-content: center; text-align: center; padding: 0 24px; }
+.reels-empty h2 { font: 800 28px/1.2 var(--serif); margin: 0 0 8px; }
+.reels-empty p { color: #b9bdc3; margin: 0 auto 22px; max-width: 40ch; }
+
+@media (max-width: 760px) {
+  .reels-nav { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reels { scroll-behavior: auto; }
+}

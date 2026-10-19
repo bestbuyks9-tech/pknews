@@ -35,6 +35,7 @@ export function Header({ active, breaking }: { active?: string; breaking?: Post[
             {CATEGORIES.map((c) => (
               <Link key={c.slug} href={`/${c.slug}`} className={active === c.slug ? "on" : ""}>{c.label}</Link>
             ))}
+            <Link href="/histori">▶ Histori</Link>
           </div>
           <form action="/kerko" className="nav-search" role="search">
             <input name="q" placeholder="Kërko lajme…" aria-label="Kërko lajme" />
@@ -71,6 +72,7 @@ export function Footer() {
           </div>
           <nav className="footer-links" aria-label="Rubrikat">
             {CATEGORIES.map((c) => <Link key={c.slug} href={`/${c.slug}`}>{c.label}</Link>)}
+            <Link href="/histori">Histori</Link>
             <Link href="/kerko">Kërko</Link>
           </nav>
         </div>
