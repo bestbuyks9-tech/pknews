@@ -228,3 +228,4 @@ a:hover .headline { color: var(--accent); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+.ak-slot { margin: 24px 0; font-family: var(--sans); }

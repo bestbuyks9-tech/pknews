@@ -5,6 +5,7 @@ import sanitizeHtml from "sanitize-html";
 import { Footer, Header } from "@/components/Chrome";
 import { FacebookBox } from "@/components/FacebookBox";
 import { Ad } from "@/components/Ad";
+import { AdsKeeper } from "@/components/AdsKeeper";
 import { Card, Kicker, MostRead, SecHead } from "@/components/PostCard";
 import { ShareBar } from "@/components/ShareBar";
 import { latestPosts, postBySlug } from "@/lib/posts";
@@ -104,9 +105,10 @@ export default async function ArticlePage({ params }: Props) {
             )}
             <div className="prose">
               <div dangerouslySetInnerHTML={{ __html: first }} />
-              {second && <div className="ad-wrap"><Ad size="rectangle" /></div>}
+              {second && <div className="ad-wrap">{SITE.adskeeper.inArticle ? <AdsKeeper widgetId={SITE.adskeeper.inArticle} /> : <Ad size="rectangle" />}</div>}
               {second && <div dangerouslySetInnerHTML={{ __html: second }} />}
             </div>
+            {SITE.adskeeper.underArticle && <AdsKeeper widgetId={SITE.adskeeper.underArticle} />}
           </article>
           <aside className="sidebar" style={{ paddingTop: 20 }}>
             <Ad size="rectangle" />

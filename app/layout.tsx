@@ -20,6 +20,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="sq">
       <body>
         {children}
+        {SITE.adskeeper.siteId && (
+          <Script src={`https://jsc.adskeeper.com/site/${SITE.adskeeper.siteId}.js`} strategy="afterInteractive" />
+        )}
         {SITE.gaId && (
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${SITE.gaId}`} strategy="afterInteractive" />
