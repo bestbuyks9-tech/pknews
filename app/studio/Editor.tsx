@@ -7,20 +7,10 @@ import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import { CATEGORIES, slugify, type Post } from "@/lib/site";
 import { supabase, type Profile } from "@/lib/browser";
+import { uploadCover, uploadImage } from "@/lib/media";
 
 type Draft = Pick<Post, "title" | "slug" | "excerpt" | "body" | "category" | "cover_url" | "cover_alt" | "featured" | "status" | "published_at">;
 const EMPTY: Draft = { title: "", slug: "", excerpt: "", body: "", category: "kosova", cover_url: null, cover_alt: "", featured: false, status: "draft", published_at: null };
-
-async function uploadImage(file: File) {
-  if (!file.type.startsWith("image/")) throw new Error("Zgjidh një foto (JPG, PNG, WEBP).");
-  if (file.size > 10 * 1024 * 1024) throw new Error("Fotoja është më e madhe se 10 MB.");
-  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-  const d = new Date();
-  const path = `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${crypto.randomUUID()}.${ext}`;
-  const { error } = await supabase.storage.from("media").upload(path, file, { cacheControl: "31536000", contentType: file.type });
-  if (error) throw new Error("Ngarkimi dështoi: " + error.message);
-  return supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
-}
 
 export default function Editor({ id, profile, onClose, onSaved }: { id: string | null; profile: Profile; onClose: () => void; onSaved: (id: string) => void }) {
   const [d, setD] = useState<Draft>(EMPTY);
@@ -138,7 +128,7 @@ export default function Editor({ id, profile, onClose, onSaved }: { id: string |
         <div className="ed-doc">
           <CoverDrop url={d.cover_url} uploading={uploading} onFile={async (f) => {
             setUploading(true);
-            try { set("cover_url", await uploadImage(f)); } catch (e) { setNotice({ kind: "err", text: (e as Error).message }); }
+            try { set("cover_url", await uploadCover(f)); } catch (e) { setNotice({ kind: "err", text: (e as Error).message }); }
             setUploading(false);
           }} onClear={() => set("cover_url", null)} />
           {d.cover_url && <input className="ed-caption" placeholder="Përshkrimi i fotos / burimi (opsional)" value={d.cover_alt ?? ""} onChange={(e) => set("cover_alt", e.target.value)} />}
@@ -205,7 +195,7 @@ function CoverDrop({ url, uploading, onFile, onClear }: { url: string | null; up
           </div>
         </>
       ) : (
-        <div className="ed-cover-empty">{uploading ? <span className="st-spinner" /> : <><strong>＋ Foto kryesore</strong><small>Tërhiqe këtu ose kliko për ta zgjedhur</small></>}</div>
+        <div className="ed-cover-empty">{uploading ? <span className="st-spinner" /> : <><strong>＋ Foto kryesore</strong><small>Tërhiqe këtu ose kliko për ta zgjedhur. Pritet automatikisht në 16:9.</small></>}</div>
       )}
       <input ref={input} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.target.value = ""; }} />
     </div>

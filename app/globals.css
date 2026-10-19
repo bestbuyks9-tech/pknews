@@ -172,7 +172,7 @@ a:hover .headline { color: var(--accent); }
 .share a, .share button { height: 32px; padding: 0 12px; display: inline-flex; align-items: center; border-radius: 3px; border: 0; background: var(--bg-2); font: 700 12px var(--sans); color: var(--text-2); cursor: pointer; }
 .share a:hover, .share button:hover { background: var(--accent); color: #fff; }
 .article-cover { margin: 20px 0; }
-.article-cover img { width: 100%; }
+.article-cover img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--bg-2); }
 .article-cover figcaption { font-size: 13px; color: var(--muted); padding: 8px 0; border-bottom: 1px solid var(--line); }
 .prose { font: 400 19px/1.7 var(--serif); color: var(--text-2); max-width: 720px; }
 .prose p { margin: 0 0 1.1em; }
