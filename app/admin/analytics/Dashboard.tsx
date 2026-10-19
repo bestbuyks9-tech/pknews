@@ -37,6 +37,7 @@ export default function Dashboard() {
   const [usage, setUsage] = useState<UsageData | null>(null);
   const [usageError, setUsageError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const [refreshErrors, setRefreshErrors] = useState<Record<string, string>>({});
 
   const loadUsage = useCallback(async () => {
     setUsageError("");
@@ -55,9 +56,16 @@ export default function Dashboard() {
 
   async function refreshAll() {
     setRefreshing(true);
+    const errors: Record<string, string> = {};
     try {
-      await fetch("/api/admin/analytics/refresh", { method: "POST" });
+      const res = await fetch("/api/admin/analytics/refresh", { method: "POST" });
+      const body = await res.json().catch(() => ({}));
+      if (body.error) { errors.vercel = errors.supabase = body.error; }
+      for (const r of body.results ?? []) if (r.error) errors[r.source] = r.error;
+    } catch {
+      errors.vercel = errors.supabase = "Rifreskimi dështoi.";
     } finally {
+      setRefreshErrors(errors);
       await Promise.all([load(days), loadUsage()]);
       setRefreshing(false);
     }
@@ -179,7 +187,7 @@ export default function Dashboard() {
         {!site && !error && <div className="an-loading"><span className="an-spinner" /></div>}
 
         {usageError && <p className="an-error" role="alert">⚠ {usageError}</p>}
-        {usage ? <Usage data={usage} /> : !usageError && <div className="an-loading small"><span className="an-spinner" /></div>}
+        {usage ? <Usage data={{ ...usage, errors: { ...usage.errors, ...refreshErrors } }} /> : !usageError && <div className="an-loading small"><span className="an-spinner" /></div>}
       </main>
     </div>
   );

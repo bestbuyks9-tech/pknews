@@ -15,6 +15,7 @@ type Project = {
 
 export type UsageData = {
   sources: SourceStatus[];
+  errors?: Record<string, string>;
   latest: {
     vercel: {
       deployments: Snapshot<Deployment[]>;
@@ -47,12 +48,12 @@ export default function Usage({ data }: { data: UsageData }) {
   return (
     <>
       <section aria-labelledby="vercel-h">
-        <SectionHead id="vercel-h" title="Vercel" status={data.sources.find((s) => s.source === "vercel")} />
+        <SectionHead id="vercel-h" title="Vercel" status={data.sources.find((s) => s.source === "vercel")} error={data.errors?.vercel} />
 
         <div className="an-grid">
           <div className="an-panel">
             <h3>Përdorimi kundrejt planit Hobby <small>(30 ditët e fundit)</small></h3>
-            {v.usage?.details?.error ? (
+            {!v.usage ? <NoData /> : v.usage.details?.error ? (
               <p className="an-warn">Vercel nuk e dha përdorimin: {v.usage.details.error}</p>
             ) : withLimit.length === 0 && withoutLimit.length === 0 ? (
               <p className="muted">Vercel nuk ktheu asnjë rresht përdorimi për këtë periudhë.</p>
@@ -76,7 +77,7 @@ export default function Usage({ data }: { data: UsageData }) {
 
           <div className="an-panel">
             <h3>Publikimet e fundit</h3>
-            {(v.deployments?.details ?? []).length === 0 ? <p className="muted">Asnjë publikim.</p> : (
+            {!v.deployments ? <NoData /> : (v.deployments.details ?? []).length === 0 ? <p className="muted">Asnjë publikim.</p> : (
               <ul className="an-deploys">
                 {v.deployments!.details.map((d) => (
                   <li key={d.id}>
@@ -91,22 +92,21 @@ export default function Usage({ data }: { data: UsageData }) {
             )}
           </div>
 
-          <div className="an-panel">
-            <h3>Vercel Web Analytics <small>(30 ditë)</small></h3>
-            {v.web_analytics?.details?.error ? (
-              <p className="muted">Web Analytics nuk është aktivizuar për projektin, ose Vercel nuk dha të dhëna ({v.web_analytics.details.status || "gabim"}).</p>
-            ) : (
+          {v.web_analytics && !v.web_analytics.details?.error && (
+            <div className="an-panel">
+              <h3>Vercel Web Analytics <small>(30 ditë)</small></h3>
               <div className="an-mini">
-                <div><strong>{num(v.web_analytics?.details?.pageviews ?? 0)}</strong><span>shikime</span></div>
-                <div><strong>{num(v.web_analytics?.details?.visitors ?? 0)}</strong><span>vizitorë</span></div>
+                <div><strong>{num(v.web_analytics.details?.pageviews ?? 0)}</strong><span>shikime</span></div>
+                <div><strong>{num(v.web_analytics.details?.visitors ?? 0)}</strong><span>vizitorë</span></div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </section>
 
       <section aria-labelledby="supabase-h">
-        <SectionHead id="supabase-h" title="Supabase" status={data.sources.find((s) => s.source === "supabase")} />
+        <SectionHead id="supabase-h" title="Supabase" status={data.sources.find((s) => s.source === "supabase")} error={data.errors?.supabase} />
+        {!data.latest.supabase.projects && <div className="an-panel"><NoData /></div>}
         {projects && projects.free_limit > 0 && (
           <p className="muted an-note">Projekte falas aktive: <b>{projects.free_active} / {projects.free_limit}</b></p>
         )}
@@ -163,14 +163,19 @@ export default function Usage({ data }: { data: UsageData }) {
   );
 }
 
-function SectionHead({ id, title, status }: { id: string; title: string; status?: SourceStatus }) {
-  const failed = status?.last_error && status.last_attempt_at !== status.last_success_at;
-  const partial = status?.last_error && !failed;
+function NoData() {
+  return <p className="muted">Ende pa të dhëna. Shtyp “Rifresko tani”; nëse del gabim, arsyeja shfaqet sipër.</p>;
+}
+
+function SectionHead({ id, title, status, error }: { id: string; title: string; status?: SourceStatus; error?: string }) {
+  const failed = error || (status?.last_error && status.last_attempt_at !== status.last_success_at);
+  const partial = !error && status?.last_error && !failed;
+  const message = error ?? status?.last_error ?? "";
   return (
     <div className="an-sec">
       <h2 id={id} className="an-section">{title}</h2>
       <span className="muted">{status?.last_success_at ? `Përditësuar ${dateTime(status.last_success_at)}` : "Ende pa të dhëna"}</span>
-      {failed && <span className="an-badge err" title={status!.last_error!}>⚠ Gabim: {status!.last_error}</span>}
+      {failed && <span className="an-badge err" title={message}>⚠ Gabim: {message}</span>}
       {partial && <span className="an-badge warn" title={status!.last_error!}>⚠ {status!.last_error}</span>}
     </div>
   );
