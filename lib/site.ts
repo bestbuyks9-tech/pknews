@@ -5,6 +5,8 @@ export const SITE = {
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.politikakosovare.com",
   /** Full Facebook page URL, e.g. https://www.facebook.com/politikakosovare. The sidebar box stays hidden while empty. */
   facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || "",
+  /** Google Analytics 4 measurement ID. */
+  gaId: process.env.NEXT_PUBLIC_GA_ID || "G-C28DVEWYDZ",
 };
 
 export const SUPABASE_URL =
