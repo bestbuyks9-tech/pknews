@@ -166,7 +166,8 @@ export default function Bulk({ profile }: { profile: Profile }) {
       </div>
 
       <div className="bulk-import">
-        <label className="st-btn">
+        <div className="bulk-import-top">
+        <label className="st-btn primary">
           Zgjidh skedarin CSV
           <input type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values" hidden onChange={async (e) => {
             const f = e.target.files?.[0]; e.target.value = "";
@@ -177,13 +178,14 @@ export default function Bulk({ profile }: { profile: Profile }) {
           const url = URL.createObjectURL(new Blob(["﻿" + TEMPLATE], { type: "text/csv;charset=utf-8" }));
           const a = Object.assign(document.createElement("a"), { href: url, download: "lajme-shabllon.csv" });
           a.click(); URL.revokeObjectURL(url);
-        }}>Shkarko shabllonin</button>
-        <details>
+        }}>Shkarko shabllonin ↓</button>
+        </div>
+        <details className="bulk-paste">
           <summary>ose ngjit rreshtat nga Google Sheets / Excel</summary>
           <textarea rows={5} placeholder={"kategoria\ttitulli\tpermbledhja\tteksti"} value={paste} onChange={(e) => setPaste(e.target.value)} />
           <button className="st-btn" disabled={!paste.trim()} onClick={() => { load(paste); setPaste(""); }}>Lexo rreshtat</button>
         </details>
-        <p className="muted small">
+        <p className="bulk-help">
           Kolonat: <b>kategoria</b> ({CATEGORIES.map((c) => c.label).join(", ")}), <b>titulli</b>, <b>permbledhja</b>, <b>teksti</b>.
           Kur i krijon me Claude, kërkoji: “Më jep këto lajme si CSV me kolonat kategoria, titulli, permbledhja, teksti.” Paragrafët në tekst ndahen me një rresht bosh.
         </p>
