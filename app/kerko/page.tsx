@@ -1,5 +1,5 @@
 import { Footer, Header } from "@/components/Chrome";
-import { Ad } from "@/components/Ad";
+import { Ad, SideRails } from "@/components/Ad";
 import { ListStory } from "@/components/PostCard";
 import { searchPosts } from "@/lib/posts";
 
@@ -13,6 +13,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     <>
       <Header />
       <main id="main" className="wrap">
+        <SideRails />
         <section className="page-head">
           <h1>Kërko</h1>
           <form action="/kerko" className="search-big" role="search">
