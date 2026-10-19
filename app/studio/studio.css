@@ -30,8 +30,10 @@ select option { background: #fff; }
 /* Shell */
 .st-shell { display: grid; grid-template-columns: 250px 1fr; min-height: 100vh; }
 .st-side { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 22px; padding: 24px 18px; border-right: 1px solid var(--line); background: var(--bg-2); backdrop-filter: blur(16px); }
-.st-logo { display: flex; align-items: center; gap: 10px; }
-.st-logo small { font: 600 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--plasma); padding: 3px 7px; border: 1px solid rgba(200,16,46,.3); border-radius: 6px; }
+.st-logo { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.st-logo .logo-word { font-size: 22px; line-height: 1.05; }
+.st-logo .logo-mark { width: 34px; height: 34px; font-size: 16px; flex: none; }
+.st-logo small { margin-left: 44px; font: 600 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--plasma); padding: 3px 7px; border: 1px solid rgba(200,16,46,.3); border-radius: 6px; }
 .st-new { padding: 14px; border-radius: 4px; border: 0; cursor: pointer; background: var(--grad); color: #fff; font-weight: 800; font-size: 15px; box-shadow: 0 10px 30px -12px rgba(200,16,46,.35); transition: transform .2s; }
 .st-new:hover { transform: translateY(-1px); }
 .st-side nav { display: grid; gap: 2px; }
@@ -173,10 +175,14 @@ kbd { font: 600 11px var(--mono); padding: 1px 6px; border-radius: 5px; border: 
 }
 @media (max-width: 760px) {
   .st-shell { grid-template-columns: 1fr; }
-  .st-side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px 16px; }
+  .st-side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; align-content: flex-start; gap: 12px; padding: 14px 16px; }
   .st-side nav { display: flex; order: 3; flex-basis: 100%; overflow-x: auto; }
   .st-new { order: 2; margin-left: auto; padding: 10px 14px; }
   .st-me { display: none; }
+  .st-logo { flex-direction: row; align-items: center; }
+  .st-logo small { margin-left: 0; }
+  .st-logo .logo-word { font-size: 19px; }
+  .st-shell { align-content: start; }
   .ed-bar { flex-wrap: wrap; gap: 10px; }
   .ed-actions { width: 100%; justify-content: stretch; }
   .ed-actions > * { flex: 1; text-align: center; }
