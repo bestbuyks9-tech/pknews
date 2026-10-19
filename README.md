@@ -19,4 +19,16 @@ Admins add or remove people under **Ekipi** in the Studio.
 
 Sections and their colours live in `lib/site.ts`. Ad spaces are placeholders in `components/Ad.tsx` — replace them with your ad network code (e.g. AdSense) when ready.
 
+## AdsKeeper
+Article pages have two AdsKeeper native slots: one inside the story (after the 2nd paragraph) and one under it. The site ID (1116858) and the under-article widget (2099408) are set as defaults in `lib/site.ts`; the in-article slot is off until it gets a widget ID. Any of them can be overridden in Vercel → Settings → Environment Variables:
+
+| Variable | Where to find it in the widget code |
+| --- | --- |
+| `NEXT_PUBLIC_ADSKEEPER_SITE_ID` | the number in `https://jsc.adskeeper.com/site/<number>.js` |
+| `NEXT_PUBLIC_ADSKEEPER_UNDER_ARTICLE` | `data-widget-id` of the under-article widget |
+| `NEXT_PUBLIC_ADSKEEPER_IN_ARTICLE` | `data-widget-id` of the in-article widget |
+| `ADS_TXT` (optional) | lines AdsKeeper asks you to add to `/ads.txt`, separated by `\n` |
+
+A slot whose widget ID is empty keeps the placeholder, so you can turn them on one at a time.
+
 
