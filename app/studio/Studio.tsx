@@ -155,11 +155,13 @@ function PostList({ profile, onOpen, onNew }: { profile: Profile; onOpen: (id: s
                 <strong>{p.title || "Pa titull"}</strong>
                 <small>{category(p.category).label} · {p.author_name || "—"} · ndryshuar {timeAgo(p.updated_at)}</small>
               </div>
-              {p.featured && <span className="st-badge feat">★ Kryesor</span>}
-              <span className={`st-badge ${p.status}`}>{STATUS_LABEL[p.status]}</span>
-              {canDelete(p) && (
-                <button className="st-del" title="Fshije postimin" onClick={(e) => { e.stopPropagation(); remove(p); }}>Fshije</button>
-              )}
+              <div className="st-li-meta">
+                {p.featured && <span className="st-badge feat">★ Kryesor</span>}
+                <span className={`st-badge ${p.status}`}>{STATUS_LABEL[p.status]}</span>
+                {canDelete(p) && (
+                  <button className="st-del" title="Fshije postimin" onClick={(e) => { e.stopPropagation(); remove(p); }}>Fshije</button>
+                )}
+              </div>
             </li>
           ))}
         </ul>
