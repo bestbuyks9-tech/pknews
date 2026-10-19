@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Footer, Header } from "@/components/Chrome";
 import { FacebookBox } from "@/components/FacebookBox";
-import { Ad, SideRails } from "@/components/Ad";
+import { Ad } from "@/components/Ad";
 import { Empty, ListStory, MostRead } from "@/components/PostCard";
 import { latestPosts } from "@/lib/posts";
 import { CATEGORIES, category } from "@/lib/site";
@@ -30,7 +30,6 @@ export default async function CategoryPage({ params }: Props) {
     <>
       <Header active={slug} />
       <main id="main" className="wrap" style={{ ["--hue" as string]: c.hue }}>
-        <SideRails />
         <section className="page-head">
           <h1>{c.label}</h1>
           <p className="muted" style={{ margin: "0 0 14px" }}>{posts.length} {posts.length === 1 ? "artikull" : "artikuj"}</p>

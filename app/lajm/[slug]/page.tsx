@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import sanitizeHtml from "sanitize-html";
 import { Footer, Header } from "@/components/Chrome";
 import { FacebookBox } from "@/components/FacebookBox";
-import { Ad, InlineAd, SideRails } from "@/components/Ad";
+import { Ad } from "@/components/Ad";
 import { AdsKeeper } from "@/components/AdsKeeper";
 import { Card, Kicker, MostRead, SecHead } from "@/components/PostCard";
 import { ShareBar } from "@/components/ShareBar";
@@ -83,7 +83,6 @@ export default async function ArticlePage({ params }: Props) {
     <>
       <Header active={post.category} />
       <main id="main" className="wrap" style={{ ["--hue" as string]: c.hue }}>
-        <SideRails />
         <nav className="crumbs" aria-label="Ku ndodhesh">
           <Link href="/">Ballina</Link> › <Link href={`/${c.slug}`}>{c.label}</Link>
         </nav>
@@ -106,7 +105,7 @@ export default async function ArticlePage({ params }: Props) {
             )}
             <div className="prose">
               <div dangerouslySetInnerHTML={{ __html: first }} />
-              {second && <InlineAd />}
+              {second && <div className="ad-wrap"><Ad size="rectangle" /></div>}
               {second && <div dangerouslySetInnerHTML={{ __html: second }} />}
             </div>
             {SITE.adskeeper.siteId && <AdsKeeper widgetId={SITE.adskeeper.widget} />}

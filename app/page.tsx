@@ -1,6 +1,6 @@
 import { Footer, Header } from "@/components/Chrome";
 import { FacebookBox } from "@/components/FacebookBox";
-import { Ad, AdBand, SideRails } from "@/components/Ad";
+import { Ad, AdBand } from "@/components/Ad";
 import { Card, Empty, LeadStory, MostRead, RowItem, SecHead, TextItem } from "@/components/PostCard";
 import { latestPosts } from "@/lib/posts";
 import { CATEGORIES } from "@/lib/site";
@@ -19,7 +19,6 @@ export default async function Home() {
     <>
       <Header breaking={posts.slice(0, 8)} />
       <main id="main" className="wrap">
-        <SideRails />
         {!lead ? (
           <Empty title="Ende nuk ka lajme të publikuara." text="Ju lutemi rikthehuni së shpejti." home={false} />
         ) : (
