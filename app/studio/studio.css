@@ -205,7 +205,10 @@ kbd { font: 600 11px var(--mono); padding: 1px 6px; border-radius: 5px; border: 
   .team-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 760px) {
-  .st-shell { grid-template-columns: 1fr; }
+  .st-shell { grid-template-columns: minmax(0, 1fr); }
+  .st-side, .st-side nav { min-width: 0; }
+  /* 16px stops iPhone Safari from zooming in when a field is tapped. */
+  .st-shell input, .st-shell textarea, .st-shell select { font-size: 16px; }
   .st-side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; align-content: flex-start; gap: 12px; padding: 14px 16px; }
   .st-side nav { display: flex; order: 3; flex-basis: 100%; overflow-x: auto; }
   .st-me { display: none; }
@@ -224,7 +227,7 @@ kbd { font: 600 11px var(--mono); padding: 1px 6px; border-radius: 5px; border: 
   .st-head { flex-direction: column; align-items: stretch; gap: 14px; margin-bottom: 20px; }
   .st-head h1 { font-size: 28px; }
   .st-toolbar { flex-direction: column; align-items: stretch; gap: 10px; }
-  .st-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .st-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; min-width: 0; max-width: 100%; }
   .st-tabs button { flex: none; white-space: nowrap; }
   .st-search { max-width: none; width: 100%; }
   .st-list li { display: grid; grid-template-columns: 64px 1fr; column-gap: 12px; row-gap: 8px; padding: 14px; align-items: start; }
