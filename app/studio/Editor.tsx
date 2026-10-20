@@ -112,10 +112,10 @@ export default function Editor({ id, profile, onClose, onSaved }: { id: string |
         <span className="ed-state">{dirty ? "Ndryshime të paruajtura" : d.status === "published" ? "● Live" : "Ruajtur"}</span>
         <div className="ed-actions">
           {d.status === "published" && <a className="st-btn ghost" href={`/lajm/${d.slug}`} target="_blank">Shiko ↗</a>}
-          <button className="st-btn ghost" onClick={() => save(d.status === "published" ? "published" : "draft")} disabled={!!saving}>{saving === "draft" ? "Duke ruajtur…" : d.status === "published" ? "Përditëso" : "Ruaj draftin"}</button>
+          <button className="st-btn save" onClick={() => save(d.status === "published" ? "published" : "draft")} disabled={!!saving}>{saving === "draft" ? "Duke ruajtur…" : d.status === "published" ? "Përditëso" : "Ruaj draftin"}</button>
           {canPublish ? (
             d.status === "published"
-              ? <button className="st-btn" onClick={() => save("draft")} disabled={!!saving}>Hiq nga faqja</button>
+              ? <button className="st-btn danger" onClick={() => save("draft")} disabled={!!saving}>Hiq nga faqja</button>
               : <button className="st-btn primary" onClick={() => save("published")} disabled={!!saving}>{saving === "published" ? "Duke publikuar…" : "Publiko →"}</button>
           ) : (
             <button className="st-btn primary" onClick={() => save("review")} disabled={!!saving || d.status === "review"}>{d.status === "review" ? "Në rishikim" : "Dërgo për rishikim →"}</button>
@@ -256,7 +256,7 @@ function ExtraMedia({ items, onChange, onError }: { items: MediaItem[]; onChange
           <small>Opsionale · deri në {MEDIA_MAX} foto ose video, vetëm 1 video. Shfaqen brenda tekstit, jo në vend të fotos kryesore.</small>
         </div>
         {!full && (
-          <button type="button" className="st-btn" disabled={busy} onClick={() => input.current?.click()}>
+          <button type="button" className="st-btn primary" disabled={busy} onClick={() => input.current?.click()}>
             {busy ? "Duke ngarkuar…" : hasVideo ? "＋ Foto" : "＋ Foto ose video"}
           </button>
         )}

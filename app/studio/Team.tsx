@@ -93,7 +93,7 @@ export default function Team({ me, onMeChange }: { me: Profile; onMeChange: (p: 
               {editing?.id === p.user_id ? (
                 <form className="team-rename" onSubmit={(e) => rename(p, e)}>
                   <input autoFocus value={editing.name} onChange={(e) => setEditing({ id: p.user_id, name: e.target.value })} placeholder="Emri që shfaqet në artikuj" required />
-                  <button className="st-btn primary">Ruaj</button>
+                  <button className="st-btn save">Ruaj</button>
                   <button type="button" className="st-link" onClick={() => setEditing(null)}>Anulo</button>
                 </form>
               ) : (
