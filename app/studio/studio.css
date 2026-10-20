@@ -174,6 +174,24 @@ kbd { font: 600 11px var(--mono); padding: 1px 6px; border-radius: 5px; border: 
 .bulk-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .bulk-actions > .st-link:first-child { margin-right: auto; }
 
+/* Extra media inside the article */
+.ed-media { margin-top: 28px; padding: 18px; border-radius: 6px; border: 1px dashed var(--line-2); }
+.ed-media-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.ed-media-head > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1 1 260px; }
+.ed-media-head small { color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.ed-media-list { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 14px; }
+.ed-media-list li { display: grid; grid-template-columns: 180px 1fr; gap: 16px; align-items: start; padding-top: 14px; border-top: 1px solid var(--line); }
+.ed-media-frame { width: 100%; aspect-ratio: 16 / 9; border-radius: 4px; overflow: hidden; background: #111; }
+.ed-media-frame.portrait { aspect-ratio: 3 / 4; }
+.ed-media-frame img { width: 100%; height: 100%; object-fit: cover; }
+.ed-media-frame video { width: 100%; height: 100%; object-fit: contain; }
+.ed-media-opts { display: grid; gap: 10px; justify-items: start; }
+.ed-media-opts input { width: 100%; font-size: 14px; }
+.ed-media-kind { font: 600 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.ed-media-mode { display: inline-flex; padding: 3px; gap: 3px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); }
+.ed-media-mode button { padding: 6px 12px; border: 0; border-radius: 3px; background: none; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--muted); }
+.ed-media-mode button.on { background: var(--surface-2); color: var(--text); }
+
 @media (max-width: 1000px) {
   .ed-grid { grid-template-columns: 1fr; }
   .ed-panel { position: static; order: -1; }
@@ -208,6 +226,8 @@ kbd { font: 600 11px var(--mono); padding: 1px 6px; border-radius: 5px; border: 
   .st-li-meta { flex-wrap: wrap; }
   .ed-tools { top: 112px; }
   .bulk-row { grid-template-columns: 1fr; }
+  .ed-media { padding: 14px; }
+  .ed-media-list li { grid-template-columns: 110px 1fr; gap: 12px; }
   .bulk .st-head { flex-direction: column; align-items: stretch; }
   .bulk .st-head h1 { font-size: 28px; }
   .bulk-import { padding: 16px; }
