@@ -117,7 +117,7 @@ export default async function ArticlePage({ params }: Props) {
             <div className="grid-3">{related.map((p) => <Card key={p.id} post={p} />)}</div>
           </section>
         )}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       </main>
       <Footer />
     </>

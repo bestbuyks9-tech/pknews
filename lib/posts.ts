@@ -22,14 +22,15 @@ export async function postBySlug(slug: string) {
 }
 
 export async function searchPosts(term: string) {
-  const t = term.replace(/[%,()]/g, " ").trim();
+  const t = term.replace(/[%,()"\\:*]/g, " ").trim().slice(0, 100);
   if (!t) return [];
-  const { data } = await db
+  const { data, error } = await db
     .from("posts")
     .select(LIST)
     .eq("status", "published")
     .or(`title.ilike.%${t}%,excerpt.ilike.%${t}%`)
     .order("published_at", { ascending: false })
     .limit(30);
+  if (error) console.error("Orbita: search failed", error.message);
   return safe(data);
 }
