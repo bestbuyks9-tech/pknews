@@ -55,7 +55,45 @@ export type Post = {
   published_at: string | null;
   created_at: string;
   updated_at: string;
+  /** Optional extra photos/video inside the article (not the cover). Missing on list queries. */
+  media?: MediaItem[];
 };
+
+/** Splits article HTML after the nth paragraph, so an ad or extra media can sit inside the story. */
+export function splitAfterParagraphs(html: string, paragraphs = 2): [string, string] {
+  let idx = -1;
+  for (let n = 0; n < paragraphs; n++) {
+    const next = html.indexOf("</p>", idx + 1);
+    if (next === -1) return [html, ""];
+    idx = next;
+  }
+  const cut = idx + 4;
+  return [html.slice(0, cut), html.slice(cut)];
+}
+
+/** An extra photo or video shown inside an article, in a fixed-width portrait or landscape frame. */
+export type MediaItem = { type: "image" | "video"; url: string; mode: "portrait" | "landscape"; caption?: string };
+
+/** At most this many extra media per article, and at most one of them a video (same rule as the database). */
+export const MEDIA_MAX = 2;
+
+/** Keeps only well-formed media items, within the limits above. */
+export function cleanMedia(value: unknown): MediaItem[] {
+  if (!Array.isArray(value)) return [];
+  const out: MediaItem[] = [];
+  for (const m of value) {
+    if (!m || typeof m !== "object") continue;
+    const { type, url, mode, caption } = m as Record<string, unknown>;
+    if ((type !== "image" && type !== "video") || (mode !== "portrait" && mode !== "landscape")) continue;
+    if (typeof url !== "string" || !url.startsWith("https://")) continue;
+    if (type === "video" && out.some((x) => x.type === "video")) continue;
+    const item: MediaItem = { type, url, mode };
+    if (typeof caption === "string" && caption.trim()) item.caption = caption.trim();
+    out.push(item);
+    if (out.length === MEDIA_MAX) break;
+  }
+  return out;
+}
 
 export function formatDate(iso: string | null) {
   if (!iso) return "";

@@ -5,12 +5,12 @@ import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
-import { CATEGORIES, slugify, type Post } from "@/lib/site";
+import { CATEGORIES, MEDIA_MAX, cleanMedia, slugify, type MediaItem, type Post } from "@/lib/site";
 import { supabase, type Profile } from "@/lib/browser";
-import { uploadCover, uploadImage } from "@/lib/media";
+import { uploadCover, uploadExtra, uploadImage } from "@/lib/media";
 
-type Draft = Pick<Post, "title" | "slug" | "excerpt" | "body" | "category" | "cover_url" | "cover_alt" | "featured" | "status" | "published_at">;
-const EMPTY: Draft = { title: "", slug: "", excerpt: "", body: "", category: "kosova", cover_url: null, cover_alt: "", featured: false, status: "draft", published_at: null };
+type Draft = Pick<Post, "title" | "slug" | "excerpt" | "body" | "category" | "cover_url" | "cover_alt" | "featured" | "status" | "published_at"> & { media: MediaItem[] };
+const EMPTY: Draft = { title: "", slug: "", excerpt: "", body: "", category: "kosova", cover_url: null, cover_alt: "", featured: false, status: "draft", published_at: null, media: [] };
 
 export default function Editor({ id, profile, onClose, onSaved }: { id: string | null; profile: Profile; onClose: () => void; onSaved: (id: string) => void }) {
   const [d, setD] = useState<Draft>(EMPTY);
@@ -54,7 +54,7 @@ export default function Editor({ id, profile, onClose, onSaved }: { id: string |
   useEffect(() => {
     if (!id) return;
     supabase.from("posts").select("*").eq("id", id).single().then(({ data }) => {
-      if (data) { setD(data as Draft); setSlugTouched(true); }
+      if (data) { setD({ ...(data as Draft), media: cleanMedia(data.media) }); setSlugTouched(true); }
       setLoaded(true);
     });
   }, [id]);
@@ -71,7 +71,7 @@ export default function Editor({ id, profile, onClose, onSaved }: { id: string |
     const slug = (d.slug || slugify(d.title)) || crypto.randomUUID().slice(0, 8);
     const record = {
       title: d.title.trim(), slug, excerpt: d.excerpt.trim(), body: d.body, category: d.category,
-      cover_url: d.cover_url, cover_alt: d.cover_alt, featured: d.featured, status,
+      cover_url: d.cover_url, cover_alt: d.cover_alt, featured: d.featured, status, media: cleanMedia(d.media),
       published_at: status === "published" ? (d.published_at ?? new Date().toISOString()) : d.published_at,
     };
     const res = id
@@ -112,10 +112,10 @@ export default function Editor({ id, profile, onClose, onSaved }: { id: string |
         <span className="ed-state">{dirty ? "Ndryshime të paruajtura" : d.status === "published" ? "● Live" : "Ruajtur"}</span>
         <div className="ed-actions">
           {d.status === "published" && <a className="st-btn ghost" href={`/lajm/${d.slug}`} target="_blank">Shiko ↗</a>}
-          <button className="st-btn ghost" onClick={() => save(d.status === "published" ? "published" : "draft")} disabled={!!saving}>{saving === "draft" ? "Duke ruajtur…" : d.status === "published" ? "Përditëso" : "Ruaj draftin"}</button>
+          <button className="st-btn save" onClick={() => save(d.status === "published" ? "published" : "draft")} disabled={!!saving}>{saving === "draft" ? "Duke ruajtur…" : d.status === "published" ? "Përditëso" : "Ruaj draftin"}</button>
           {canPublish ? (
             d.status === "published"
-              ? <button className="st-btn" onClick={() => save("draft")} disabled={!!saving}>Hiq nga faqja</button>
+              ? <button className="st-btn danger" onClick={() => save("draft")} disabled={!!saving}>Hiq nga faqja</button>
               : <button className="st-btn primary" onClick={() => save("published")} disabled={!!saving}>{saving === "published" ? "Duke publikuar…" : "Publiko →"}</button>
           ) : (
             <button className="st-btn primary" onClick={() => save("review")} disabled={!!saving || d.status === "review"}>{d.status === "review" ? "Në rishikim" : "Dërgo për rishikim →"}</button>
@@ -141,6 +141,7 @@ export default function Editor({ id, profile, onClose, onSaved }: { id: string |
             setUploading(false);
           }} />
           <EditorContent editor={editor} className="ed-body prose" />
+          <ExtraMedia items={d.media} onChange={(m) => set("media", m)} onError={(text) => setNotice({ kind: "err", text })} />
         </div>
 
         <aside className="ed-panel">
@@ -228,5 +229,62 @@ function Toolbar({ editor, onImage }: { editor: TipTap | null; onImage: (f: File
       {b("―", false, () => editor.chain().focus().setHorizontalRule().run(), "Ndarës")}
       <input ref={file} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) onImage(f); e.target.value = ""; }} />
     </div>
+  );
+}
+
+/** Optional extra photos/video for inside the article: up to MEDIA_MAX items, at most one video. */
+function ExtraMedia({ items, onChange, onError }: { items: MediaItem[]; onChange: (m: MediaItem[]) => void; onError: (text: string) => void }) {
+  const input = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const hasVideo = items.some((m) => m.type === "video");
+  const full = items.length >= MEDIA_MAX;
+  const patch = (i: number, p: Partial<MediaItem>) => onChange(items.map((m, j) => (j === i ? { ...m, ...p } : m)));
+
+  async function add(file: File) {
+    if (full) return onError(`Mund të shtosh deri në ${MEDIA_MAX} media shtesë.`);
+    if (file.type.startsWith("video/") && hasVideo) return onError("Lejohet vetëm një video për artikull.");
+    setBusy(true);
+    try { onChange([...items, await uploadExtra(file)]); } catch (e) { onError((e as Error).message); }
+    setBusy(false);
+  }
+
+  return (
+    <section className="ed-media">
+      <div className="ed-media-head">
+        <div>
+          <strong>Media shtesë</strong>
+          <small>Opsionale · deri në {MEDIA_MAX} foto ose video, vetëm 1 video. Shfaqen brenda tekstit, jo në vend të fotos kryesore.</small>
+        </div>
+        {!full && (
+          <button type="button" className="st-btn primary" disabled={busy} onClick={() => input.current?.click()}>
+            {busy ? "Duke ngarkuar…" : hasVideo ? "＋ Foto" : "＋ Foto ose video"}
+          </button>
+        )}
+      </div>
+      {items.length > 0 && (
+        <ul className="ed-media-list">
+          {items.map((m, i) => (
+            <li key={m.url}>
+              <div className={`ed-media-frame ${m.mode}`}>
+                {m.type === "video"
+                  ? <video src={m.url} muted playsInline preload="metadata" controls />
+                  : /* eslint-disable-next-line @next/next/no-img-element */ <img src={m.url} alt="" />}
+              </div>
+              <div className="ed-media-opts">
+                <span className="ed-media-kind">{m.type === "video" ? "Video" : "Foto"}</span>
+                <div className="ed-media-mode" role="group" aria-label="Formati">
+                  <button type="button" className={m.mode === "portrait" ? "on" : ""} onClick={() => patch(i, { mode: "portrait" })}>Portret</button>
+                  <button type="button" className={m.mode === "landscape" ? "on" : ""} onClick={() => patch(i, { mode: "landscape" })}>Horizontal</button>
+                </div>
+                <input placeholder="Përshkrimi / burimi (opsional)" value={m.caption ?? ""} onChange={(e) => patch(i, { caption: e.target.value })} />
+                <button type="button" className="st-link danger" onClick={() => onChange(items.filter((_, j) => j !== i))}>Hiq</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      <input ref={input} type="file" hidden accept={hasVideo ? "image/*" : "image/*,video/mp4,video/webm,video/quicktime"}
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) add(f); e.target.value = ""; }} />
+    </section>
   );
 }

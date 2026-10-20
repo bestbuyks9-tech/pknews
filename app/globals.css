@@ -183,6 +183,13 @@ a:hover .headline { color: var(--accent); }
 .prose blockquote { margin: 1.4em 0; padding: 4px 0 4px 20px; border-left: 4px solid var(--accent); font-style: italic; color: var(--ink); }
 .prose blockquote p { margin: 0; }
 .prose img { width: 100%; margin: 1.4em 0; }
+.article-media { display: grid; gap: 24px; width: 100%; max-width: 520px; margin: 1.8em auto; }
+.article-media .am { margin: 0; }
+.article-media .am-frame { width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 4px; background: #0d0d0d; }
+.article-media .am-portrait .am-frame { aspect-ratio: 3 / 4; }
+.article-media img { width: 100%; height: 100%; margin: 0; object-fit: cover; display: block; }
+.article-media video { width: 100%; height: 100%; object-fit: contain; display: block; background: #000; }
+.article-media figcaption { font: 400 13px/1.5 var(--sans); color: var(--muted); padding: 8px 0; border-bottom: 1px solid var(--line); }
 .prose ul, .prose ol { padding-left: 1.3em; margin: 0 0 1.1em; }
 .prose li + li { margin-top: .35em; }
 .prose hr { border: 0; height: 1px; background: var(--line-2); margin: 2em 0; }

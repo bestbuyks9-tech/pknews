@@ -183,7 +183,7 @@ export default function Bulk({ profile }: { profile: Profile }) {
         <details className="bulk-paste">
           <summary>ose ngjit rreshtat nga Google Sheets / Excel</summary>
           <textarea rows={5} placeholder={"kategoria\ttitulli\tpermbledhja\tteksti"} value={paste} onChange={(e) => setPaste(e.target.value)} />
-          <button className="st-btn" disabled={!paste.trim()} onClick={() => { load(paste); setPaste(""); }}>Lexo rreshtat</button>
+          <button className="st-btn primary" disabled={!paste.trim()} onClick={() => { load(paste); setPaste(""); }}>Lexo rreshtat</button>
         </details>
         <p className="bulk-help">
           Kolonat: <b>kategoria</b> ({CATEGORIES.map((c) => c.label).join(", ")}), <b>titulli</b>, <b>permbledhja</b>, <b>teksti</b>.

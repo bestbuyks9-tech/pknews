@@ -6,10 +6,11 @@ import { Footer, Header } from "@/components/Chrome";
 import { FacebookBox } from "@/components/FacebookBox";
 import { Ad } from "@/components/Ad";
 import { AdsKeeper } from "@/components/AdsKeeper";
+import { ArticleMedia } from "@/components/ArticleMedia";
 import { Card, Kicker, MostRead, SecHead } from "@/components/PostCard";
 import { ShareBar } from "@/components/ShareBar";
 import { latestPosts, postBySlug } from "@/lib/posts";
-import { SITE, category, formatDate, readingTime } from "@/lib/site";
+import { SITE, category, cleanMedia, formatDate, readingTime, splitAfterParagraphs } from "@/lib/site";
 
 export const revalidate = 30;
 export const dynamicParams = true;
@@ -45,18 +46,6 @@ const ALLOWED = {
   transformTags: { a: sanitizeHtml.simpleTransform("a", { target: "_blank", rel: "noopener noreferrer" }) },
 };
 
-/** Split article HTML after the 2nd paragraph so an ad can sit inside the story. */
-function splitForAd(html: string): [string, string] {
-  let idx = -1;
-  for (let n = 0; n < 2; n++) {
-    const next = html.indexOf("</p>", idx + 1);
-    if (next === -1) return [html, ""];
-    idx = next;
-  }
-  const cut = idx + 4;
-  return [html.slice(0, cut), html.slice(cut)];
-}
-
 export default async function ArticlePage({ params }: Props) {
   const { slug } = await params;
   const post = await postBySlug(slug);
@@ -64,7 +53,10 @@ export default async function ArticlePage({ params }: Props) {
   const c = category(post.category);
   const [sameCat, latest] = await Promise.all([latestPosts(7, post.category), latestPosts(8)]);
   const related = sameCat.filter((p) => p.id !== post.id).slice(0, 3);
-  const [first, second] = splitForAd(sanitizeHtml(post.body, ALLOWED));
+  const [first, rest] = splitAfterParagraphs(sanitizeHtml(post.body, ALLOWED));
+  // Extra media sits two paragraphs after the in-article ad, or at the end of a shorter story.
+  const media = cleanMedia(post.media);
+  const [second, third] = media.length ? splitAfterParagraphs(rest) : [rest, ""];
   const url = `${SITE.url}/lajm/${post.slug}`;
 
   const jsonLd = {
@@ -107,6 +99,8 @@ export default async function ArticlePage({ params }: Props) {
               <div dangerouslySetInnerHTML={{ __html: first }} />
               {second && <div className="ad-wrap"><Ad size="rectangle" /></div>}
               {second && <div dangerouslySetInnerHTML={{ __html: second }} />}
+              <ArticleMedia items={media} />
+              {third && <div dangerouslySetInnerHTML={{ __html: third }} />}
             </div>
             {SITE.adskeeper.siteId && <AdsKeeper widgetId={SITE.adskeeper.widget} />}
           </article>
