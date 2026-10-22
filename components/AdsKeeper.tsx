@@ -13,12 +13,12 @@ declare global {
  * (app/layout.tsx); each widget asks it to fill its box on mount, so it also works after
  * client-side navigation. An unfilled box takes no space.
  */
-export function AdsKeeper({ widgetId }: { widgetId: string }) {
+export function AdsKeeper({ widgetId, className = "" }: { widgetId: string; className?: string }) {
   useEffect(() => {
     window._mgq = window._mgq || [];
     window._mgq.push(["_mgc.load"]);
   }, [widgetId]);
 
   if (!SITE.adskeeper.siteId || !widgetId) return null;
-  return <div key={widgetId} className="ak-slot" data-type="_mgwidget" data-widget-id={widgetId} />;
+  return <div key={widgetId} className={`ak-slot ${className}`.trim()} data-type="_mgwidget" data-widget-id={widgetId} />;
 }

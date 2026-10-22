@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { CATEGORIES, type Post } from "@/lib/site";
+import { CATEGORIES, SITE, type Post } from "@/lib/site";
 import { Logo } from "./Logo";
 import { Ad } from "./Ad";
+import { AdsKeeper } from "./AdsKeeper";
 import { LiveBar } from "./LiveBar";
 
 function today() {
@@ -25,7 +26,7 @@ export function Header({ active, breaking }: { active?: string; breaking?: Post[
       <header className="masthead">
         <div className="wrap">
           <Link href="/" aria-label="Politika Kosovare, ballina"><Logo tagline /></Link>
-          <Ad size="leaderboard" label={false} />
+          {SITE.adskeeper.banner ? <AdsKeeper widgetId={SITE.adskeeper.banner} className="ak-header" /> : <Ad size="leaderboard" label={false} />}
         </div>
       </header>
       <nav className="nav" aria-label="Rubrikat">
@@ -42,6 +43,9 @@ export function Header({ active, breaking }: { active?: string; breaking?: Post[
         </div>
       </nav>
       <LiveBar />
+      {SITE.adskeeper.banner && (
+        <div className="wrap"><AdsKeeper widgetId={SITE.adskeeper.banner} className="ak-band" /></div>
+      )}
       {breaking && breaking.length > 0 && (
         <div className="ticker">
           <div className="wrap">

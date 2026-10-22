@@ -4,6 +4,7 @@ import "@fontsource-variable/source-serif-4";
 import "@fontsource-variable/inter";
 import "./globals.css";
 import { SITE } from "@/lib/site";
+import { AdsKeeper } from "@/components/AdsKeeper";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         {children}
+        {SITE.adskeeper.mobile && <AdsKeeper widgetId={SITE.adskeeper.mobile} className="ak-mobile" />}
         {/* Metricool web analytics pixel */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="https://tracker.metricool.com/c3po.jpg?hash=cba95736f786e3ebd10b8e1ceab9936e" alt="" width={1} height={1} style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} aria-hidden="true" />
