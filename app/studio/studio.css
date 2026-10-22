@@ -100,9 +100,25 @@ select option { background: #fff; }
 .ed-cover img { width: 100%; height: 100%; object-fit: cover; }
 .ed-cover-empty { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 4px; color: var(--text-2); }
 .ed-cover-empty small { color: var(--muted); }
-.ed-cover-actions { position: absolute; right: 12px; bottom: 12px; display: flex; gap: 6px; opacity: 0; transition: opacity .2s; }
-.ed-cover:hover .ed-cover-actions { opacity: 1; }
-.ed-cover-actions button { padding: 7px 12px; border-radius: 4px; border: 0; background: rgba(0,0,0,.65); backdrop-filter: blur(8px); cursor: pointer; font-size: 13px; font-weight: 700; }
+.ed-cover-busy { position: absolute; inset: 0; display: grid; place-content: center; background: rgba(255,255,255,.6); }
+.ed-cover-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.ed-cover-actions button { padding: 7px 12px; border-radius: 4px; border: 1px solid var(--line-2); background: var(--surface-2); cursor: pointer; font-size: 13px; font-weight: 700; }
+.ed-cover-actions button:hover, .ed-cover-actions button.on { border-color: var(--text-2); }
+.ed-cover-actions button.danger { color: #b42318; }
+.ed-cover-actions button:disabled { opacity: .5; cursor: default; }
+.ed-cover-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin: 8px 0 0; padding: 0; list-style: none; }
+.ed-cover-pick button { display: block; width: 100%; aspect-ratio: 16 / 9; padding: 0; border: 2px solid transparent; border-radius: 4px; overflow: hidden; cursor: pointer; background: var(--surface-2); }
+.ed-cover-pick button:hover { border-color: var(--plasma); }
+.ed-cover-pick img { width: 100%; height: 100%; object-fit: cover; }
+.ed-framer { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.6); }
+.ed-framer-card { display: flex; flex-direction: column; gap: 10px; width: min(820px, 100%); max-height: 100%; overflow: auto; padding: 20px; border-radius: 6px; background: #fff; box-shadow: 0 20px 60px -20px rgba(0,0,0,.4); }
+.ed-framer-stage { display: grid; place-items: center; aspect-ratio: 16 / 9; border-radius: 4px; overflow: hidden; background: #111; }
+.ed-framer-stage canvas { width: 100%; height: 100%; cursor: grab; touch-action: none; }
+.ed-framer-stage canvas:active { cursor: grabbing; }
+.ed-framer-zoom { display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 700; }
+.ed-framer-zoom input { flex: 1; }
+.ed-framer-actions { display: flex; gap: 8px; }
+.ed-framer-actions span { flex: 1; }
 .ed-caption { width: 100%; margin-top: 8px; padding: 6px 2px; border: 0; background: none; outline: none; font-size: 13px; color: var(--muted); }
 .ed-title { width: 100%; margin-top: 28px; border: 0; background: none; outline: none; resize: none; overflow: hidden; font: 600 clamp(28px, 3.6vw, 42px)/1.1 var(--display); letter-spacing: -0.035em; }
 .ed-title::placeholder, .ed-excerpt::placeholder { color: #9aa0a6; }

@@ -11,20 +11,36 @@ function checkImage(file: File) {
   if (file.size > 15 * 1024 * 1024) throw new Error("Fotoja është më e madhe se 15 MB.");
 }
 
-/** Crops the middle of a photo to 16:9 and scales it to COVER_W × COVER_H as a JPEG. */
-async function cropCover(file: File): Promise<Blob> {
-  const bmp = await createImageBitmap(file);
+/** Which part of a photo becomes the cover: a centre point (0–1 of the photo's width and height) and a zoom of 1 or more. */
+export type CoverFrame = { x: number; y: number; zoom: number };
+export const CENTRE: CoverFrame = { x: 0.5, y: 0.5, zoom: 1 };
+
+/** The 16:9 rectangle of a w × h photo that `frame` picks, kept inside the photo. */
+export function coverRect(w: number, h: number, frame: CoverFrame) {
   const target = COVER_W / COVER_H;
-  let sw = bmp.width, sh = bmp.height, sx = 0, sy = 0;
-  if (sw / sh > target) { sw = Math.round(sh * target); sx = Math.round((bmp.width - sw) / 2); }
-  else { sh = Math.round(sw / target); sy = Math.round((bmp.height - sh) / 2); }
-  const canvas = document.createElement("canvas");
-  canvas.width = COVER_W; canvas.height = COVER_H;
+  let sw = w, sh = h;
+  if (w / h > target) sw = h * target; else sh = w / target;
+  sw /= frame.zoom; sh /= frame.zoom;
+  const sx = Math.min(Math.max(frame.x * w - sw / 2, 0), w - sw);
+  const sy = Math.min(Math.max(frame.y * h - sh / 2, 0), h - sh);
+  return { sx, sy, sw, sh };
+}
+
+/** Draws the framed part of a photo onto a canvas of the given size. */
+export function drawCover(canvas: HTMLCanvasElement, bmp: ImageBitmap, frame: CoverFrame, width = COVER_W, height = COVER_H) {
+  canvas.width = width; canvas.height = height;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Shfletuesi nuk mund ta përpunojë foton.");
+  const { sx, sy, sw, sh } = coverRect(bmp.width, bmp.height, frame);
   ctx.imageSmoothingQuality = "high";
-  ctx.drawImage(bmp, sx, sy, sw, sh, 0, 0, COVER_W, COVER_H);
-  bmp.close();
+  ctx.drawImage(bmp, sx, sy, sw, sh, 0, 0, width, height);
+}
+
+/** Crops a photo to 16:9 (the middle, unless a frame is given) and scales it to COVER_W × COVER_H as a JPEG. */
+async function cropCover(source: Blob, frame: CoverFrame = CENTRE): Promise<Blob> {
+  const bmp = await createImageBitmap(source);
+  const canvas = document.createElement("canvas");
+  try { drawCover(canvas, bmp, frame); } finally { bmp.close(); }
   return new Promise((resolve, reject) =>
     canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Fotoja nuk u përpunua."))), "image/jpeg", 0.86));
 }
@@ -43,11 +59,20 @@ export async function uploadImage(file: File) {
   return put(file, (file.name.split(".").pop() || "jpg").toLowerCase(), file.type);
 }
 
-/** Uploads a cover photo, cropped to the fixed 16:9 cover size. */
-export async function uploadCover(file: File) {
-  checkImage(file);
-  if (file.type === "image/gif" || file.type === "image/svg+xml") return uploadImage(file);
-  return put(await cropCover(file), "jpg", "image/jpeg");
+/** Uploads a cover photo, cropped to the fixed 16:9 cover size (the middle, unless a frame is given). */
+export async function uploadCover(file: Blob, frame?: CoverFrame) {
+  if (file instanceof File) checkImage(file);
+  if (file instanceof File && (file.type === "image/gif" || file.type === "image/svg+xml")) return uploadImage(file);
+  return put(await cropCover(file, frame), "jpg", "image/jpeg");
+}
+
+/** Downloads a photo that is already on the site (the current cover, or one in the article) so it can be framed again. */
+export async function fetchPhoto(url: string): Promise<Blob> {
+  const res = await fetch(url, { mode: "cors" }).catch(() => null);
+  if (!res?.ok) throw new Error("Fotoja nuk u hap. Ngarkoje nga pajisja.");
+  const blob = await res.blob();
+  if (!blob.type.startsWith("image/")) throw new Error("Ky link nuk është foto.");
+  return blob;
 }
 
 /** Video formats the media bucket accepts for in-article reels. */

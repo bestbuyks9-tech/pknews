@@ -7,7 +7,7 @@ import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import { CATEGORIES, MEDIA_MAX, cleanMedia, slugify, type MediaItem, type Post } from "@/lib/site";
 import { supabase, type Profile } from "@/lib/browser";
-import { uploadCover, uploadExtra, uploadImage } from "@/lib/media";
+import { CENTRE, coverRect, drawCover, fetchPhoto, uploadCover, uploadExtra, uploadImage, type CoverFrame } from "@/lib/media";
 
 type Draft = Pick<Post, "title" | "slug" | "excerpt" | "body" | "category" | "cover_url" | "cover_alt" | "featured" | "status" | "published_at"> & { media: MediaItem[] };
 const EMPTY: Draft = { title: "", slug: "", excerpt: "", body: "", category: "kosova", cover_url: null, cover_alt: "", featured: false, status: "draft", published_at: null, media: [] };
@@ -126,11 +126,12 @@ export default function Editor({ id, profile, onClose, onSaved }: { id: string |
 
       <div className="ed-grid">
         <div className="ed-doc">
-          <CoverDrop url={d.cover_url} uploading={uploading} onFile={async (f) => {
-            setUploading(true);
-            try { set("cover_url", await uploadCover(f)); } catch (e) { setNotice({ kind: "err", text: (e as Error).message }); }
-            setUploading(false);
-          }} onClear={() => set("cover_url", null)} />
+          <CoverDrop url={d.cover_url} uploading={uploading} photos={articlePhotos(d)} onError={(text) => setNotice({ kind: "err", text })}
+            onPick={async (photo, frame) => {
+              setUploading(true);
+              try { set("cover_url", await uploadCover(photo, frame)); } catch (e) { setNotice({ kind: "err", text: (e as Error).message }); }
+              setUploading(false);
+            }} onClear={() => set("cover_url", null)} />
           {d.cover_url && <input className="ed-caption" placeholder="Përshkrimi i fotos / burimi (opsional)" value={d.cover_alt ?? ""} onChange={(e) => set("cover_alt", e.target.value)} />}
           <textarea className="ed-title" rows={1} placeholder="Titulli i lajmit" value={d.title}
             onChange={(e) => { set("title", e.target.value); if (!slugTouched) setD((x) => ({ ...x, title: e.target.value, slug: slugify(e.target.value) })); e.target.style.height = "auto"; e.target.style.height = e.target.scrollHeight + "px"; }} />
@@ -178,29 +179,141 @@ export default function Editor({ id, profile, onClose, onSaved }: { id: string |
   );
 }
 
-function CoverDrop({ url, uploading, onFile, onClear }: { url: string | null; uploading: boolean; onFile: (f: File) => void; onClear: () => void }) {
+/** Photos already in the article (in the text or the extra media) that can be made the main picture. */
+function articlePhotos(d: Draft) {
+  const inText = [...d.body.matchAll(/<img[^>]+src="([^"]+)"/g)].map((m) => m[1]);
+  const extra = d.media.filter((m) => m.type === "image").map((m) => m.url);
+  return [...new Set([...inText, ...extra])].filter((u) => u !== d.cover_url);
+}
+
+/**
+ * The main picture: drop or pick a photo, or reuse one from the article, then choose which part of it
+ * shows in the 16:9 frame. "Rregullo" reframes the current picture. Buttons stay visible so they work on phones.
+ */
+function CoverDrop({ url, uploading, photos, onPick, onClear, onError }: {
+  url: string | null; uploading: boolean; photos: string[];
+  onPick: (photo: Blob, frame: CoverFrame) => void; onClear: () => void; onError: (text: string) => void;
+}) {
   const input = useRef<HTMLInputElement>(null);
   const [over, setOver] = useState(false);
+  const [framing, setFraming] = useState<Blob | null>(null);
+  const [choosing, setChoosing] = useState(false);
+  const [opening, setOpening] = useState(false);
+
+  function frame(f: File) {
+    if (!f.type.startsWith("image/")) return onError("Zgjidh një foto (JPG, PNG, WEBP).");
+    // GIF and SVG can't be cropped without losing animation or sharpness, so they go up as they are.
+    if (f.type === "image/gif" || f.type === "image/svg+xml") return onPick(f, CENTRE);
+    setFraming(f);
+  }
+  async function reuse(src: string) {
+    setOpening(true);
+    try { setFraming(await fetchPhoto(src)); setChoosing(false); } catch (e) { onError((e as Error).message); }
+    setOpening(false);
+  }
+
   return (
-    <div className={`ed-cover ${over ? "over" : ""} ${url ? "has" : ""}`}
-      onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)}
-      onDrop={(e) => { e.preventDefault(); setOver(false); const f = e.dataTransfer.files[0]; if (f) onFile(f); }}
-      onClick={() => !url && input.current?.click()}>
-      {url ? (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+    <>
+      <div className={`ed-cover ${over ? "over" : ""} ${url ? "has" : ""}`}
+        onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)}
+        onDrop={(e) => { e.preventDefault(); setOver(false); const f = e.dataTransfer.files[0]; if (f) frame(f); }}
+        onClick={() => !url && !uploading && input.current?.click()}>
+        {url ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
           <img src={url} alt="" />
-          <div className="ed-cover-actions">
-            <button type="button" onClick={(e) => { e.stopPropagation(); input.current?.click(); }}>Ndrysho</button>
-            <button type="button" onClick={(e) => { e.stopPropagation(); onClear(); }}>Hiq</button>
-          </div>
-        </>
-      ) : (
-        <div className="ed-cover-empty">{uploading ? <span className="st-spinner" /> : <><strong>＋ Foto kryesore</strong><small>Tërhiqe këtu ose kliko për ta zgjedhur. Pritet automatikisht në 16:9.</small></>}</div>
+        ) : (
+          <div className="ed-cover-empty">{uploading ? <span className="st-spinner" /> : <><strong>＋ Foto kryesore</strong><small>Tërhiqe këtu ose kliko për ta zgjedhur. Pastaj zgjedh cila pjesë shfaqet.</small></>}</div>
+        )}
+        {url && uploading && <div className="ed-cover-busy"><span className="st-spinner" /></div>}
+      </div>
+      <div className="ed-cover-actions">
+        <button type="button" disabled={uploading} onClick={() => input.current?.click()}>{url ? "Ndrysho foton" : "Ngarko foto"}</button>
+        {url && <button type="button" disabled={uploading || opening} onClick={() => reuse(url)}>Rregullo prerjen</button>}
+        {photos.length > 0 && <button type="button" disabled={uploading} className={choosing ? "on" : ""} onClick={() => setChoosing(!choosing)}>Nga fotot e artikullit</button>}
+        {url && <button type="button" className="danger" disabled={uploading} onClick={onClear}>Hiq</button>}
+      </div>
+      {choosing && (
+        <ul className="ed-cover-pick">
+          {photos.map((p) => (
+            <li key={p}><button type="button" disabled={opening} onClick={() => reuse(p)} title="Bëje foto kryesore">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={p} alt="" />
+            </button></li>
+          ))}
+        </ul>
       )}
-      <input ref={input} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.target.value = ""; }} />
+      <input ref={input} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) frame(f); e.target.value = ""; }} />
+      {framing && <CoverFramer photo={framing} onCancel={() => setFraming(null)} onDone={(f) => { onPick(framing, f); setFraming(null); }} onError={(t) => { onError(t); setFraming(null); }} />}
+    </>
+  );
+}
+
+const PREVIEW_W = 800;
+const PREVIEW_H = 450;
+
+/** Drag the photo to move it inside the 16:9 frame, and use the slider to zoom in. */
+function CoverFramer({ photo, onCancel, onDone, onError }: { photo: Blob; onCancel: () => void; onDone: (f: CoverFrame) => void; onError: (text: string) => void }) {
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const [bmp, setBmp] = useState<ImageBitmap | null>(null);
+  const [f, setF] = useState<CoverFrame>(CENTRE);
+  const drag = useRef<{ px: number; py: number; start: CoverFrame } | null>(null);
+
+  useEffect(() => {
+    let live = true, made: ImageBitmap | null = null;
+    createImageBitmap(photo).then((b) => { made = b; if (live) setBmp(b); else b.close(); })
+      .catch(() => onError("Fotoja nuk u hap. Provo një tjetër."));
+    return () => { live = false; made?.close(); };
+  }, [photo]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => { if (bmp && canvas.current) drawCover(canvas.current, bmp, f, PREVIEW_W, PREVIEW_H); }, [bmp, f]);
+
+  // Keep the centre where the crop can actually reach, so dragging back responds at once.
+  const settle = (x: number, y: number, zoom: number): CoverFrame => {
+    if (!bmp) return { x, y, zoom };
+    const r = coverRectFor(bmp, zoom);
+    const hx = r.sw / 2 / bmp.width, hy = r.sh / 2 / bmp.height;
+    return { x: Math.min(Math.max(x, hx), 1 - hx), y: Math.min(Math.max(y, hy), 1 - hy), zoom };
+  };
+
+  function move(e: React.PointerEvent<HTMLCanvasElement>) {
+    if (!drag.current || !bmp) return;
+    const box = e.currentTarget.getBoundingClientRect();
+    const r = coverRectFor(bmp, f.zoom);
+    const { px, py, start } = drag.current;
+    const dx = ((e.clientX - px) / box.width) * r.sw / bmp.width;
+    const dy = ((e.clientY - py) / box.height) * r.sh / bmp.height;
+    setF(settle(start.x - dx, start.y - dy, f.zoom));
+  }
+
+  return (
+    <div className="ed-framer" role="dialog" aria-label="Zgjidh pjesën e fotos" onClick={onCancel}>
+      <div className="ed-framer-card" onClick={(e) => e.stopPropagation()}>
+        <strong>Zgjidh cila pjesë e fotos shfaqet</strong>
+        <small className="muted">Tërhiqe foton për ta lëvizur. Zmadho me rrëshqitësin.</small>
+        <div className="ed-framer-stage">
+          {bmp ? (
+            <canvas ref={canvas}
+              onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); drag.current = { px: e.clientX, py: e.clientY, start: f }; }}
+              onPointerMove={move} onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }} />
+          ) : <span className="st-spinner" />}
+        </div>
+        <label className="ed-framer-zoom">
+          <span>Zmadhimi</span>
+          <input type="range" min={1} max={3} step={0.01} value={f.zoom} disabled={!bmp} onChange={(e) => setF(settle(f.x, f.y, Number(e.target.value)))} />
+        </label>
+        <div className="ed-framer-actions">
+          <button type="button" className="st-btn ghost" onClick={() => setF(CENTRE)} disabled={!bmp}>Qendro</button>
+          <span />
+          <button type="button" className="st-btn ghost" onClick={onCancel}>Anulo</button>
+          <button type="button" className="st-btn primary" disabled={!bmp} onClick={() => onDone(f)}>Përdore këtë</button>
+        </div>
+      </div>
     </div>
   );
+}
+
+function coverRectFor(bmp: ImageBitmap, zoom: number) {
+  return coverRect(bmp.width, bmp.height, { x: 0.5, y: 0.5, zoom });
 }
 
 function Toolbar({ editor, onImage }: { editor: TipTap | null; onImage: (f: File) => void }) {
