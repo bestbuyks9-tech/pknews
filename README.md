@@ -20,7 +20,7 @@ Admins add or remove people under **Ekipi** in the Studio.
 Sections and their colours live in `lib/site.ts`. Ad spaces are placeholders in `components/Ad.tsx` — replace them with your ad network code (e.g. AdSense) when ready.
 
 ## AdsKeeper
-The AdsKeeper loader (site 1116858) is in the `<head>` of every page, and native widget 2099408 fills the in-article, under-article, sidebar and home billboard spaces. Banner widget 2100803 sits next to the logo (wide screens) and in a strip under the menu (tablets and up), and mobile site widget 2099429 takes that strip on phones. The other placeholder spaces are hidden while AdsKeeper is on. Defaults live in `lib/site.ts` and can be overridden in Vercel → Settings → Environment Variables:
+The AdsKeeper loader (site 1116858) is in the `<head>` of every page, and native widget 2099408 fills the in-article, under-article, sidebar and home billboard spaces. Banner widget 2100803 (a fixed 300×250 box) sits centred under the menu on every screen size, and mobile site widget 2099429 is a toaster that AdsKeeper floats in from the bottom of the screen on phones after about 8 seconds without scrolling, or drops in from the top when the reader scrolls back up (at most twice per browser session). AdsKeeper's help centre says to use each widget only once per page, so a new ad spot needs a new widget. The other placeholder spaces are hidden while AdsKeeper is on. Defaults live in `lib/site.ts` and can be overridden in Vercel → Settings → Environment Variables:
 
 | Variable | Where to find it in the widget code |
 | --- | --- |

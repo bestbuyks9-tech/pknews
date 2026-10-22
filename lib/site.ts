@@ -11,13 +11,14 @@ export const SITE = {
    * AdsKeeper native ads, from the widget code in the AdsKeeper dashboard: siteId is the number
    * in `jsc.adskeeper.com/site/<siteId>.js`, widget is the `data-widget-id`. The widget fills
    * the in-article, under-article, sidebar and home billboard spaces (see components/Ad.tsx).
+   * AdsKeeper's help centre says to use each widget once per page, so new spots need new widgets.
    */
   adskeeper: {
     siteId: process.env.NEXT_PUBLIC_ADSKEEPER_SITE_ID || "1116858",
     widget: process.env.NEXT_PUBLIC_ADSKEEPER_WIDGET || "2099408",
-    /** Banner widget: next to the logo and in the strip under the menu (components/Chrome.tsx). */
+    /** 300×250 banner widget, once per page in the strip under the menu (components/Chrome.tsx). */
     banner: process.env.NEXT_PUBLIC_ADSKEEPER_BANNER || "2100803",
-    /** Mobile site widget: in the strip under the menu, shown on phones only (components/Chrome.tsx). */
+    /** "Mobile site widget": a toaster/drag-down overlay AdsKeeper shows on phones (app/layout.tsx). */
     mobile: process.env.NEXT_PUBLIC_ADSKEEPER_MOBILE || "2099429",
   },
 };
