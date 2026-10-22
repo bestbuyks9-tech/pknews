@@ -26,7 +26,7 @@ export function Header({ active, breaking }: { active?: string; breaking?: Post[
       <header className="masthead">
         <div className="wrap">
           <Link href="/" aria-label="Politika Kosovare, ballina"><Logo tagline /></Link>
-          {SITE.adskeeper.banner ? <AdsKeeper widgetId={SITE.adskeeper.banner} className="ak-header" /> : <Ad size="leaderboard" label={false} />}
+          <Ad size="leaderboard" label={false} />
         </div>
       </header>
       <nav className="nav" aria-label="Rubrikat">
@@ -43,11 +43,9 @@ export function Header({ active, breaking }: { active?: string; breaking?: Post[
         </div>
       </nav>
       <LiveBar />
-      {(SITE.adskeeper.banner || SITE.adskeeper.mobile) && (
-        <div className="wrap">
-          {SITE.adskeeper.banner && <AdsKeeper widgetId={SITE.adskeeper.banner} className="ak-band" />}
-          {SITE.adskeeper.mobile && <AdsKeeper widgetId={SITE.adskeeper.mobile} className="ak-mobile" />}
-        </div>
+      {/* AdsKeeper allows each widget once per page, so the 300×250 banner has this one spot on every device. */}
+      {SITE.adskeeper.banner && (
+        <div className="wrap"><AdsKeeper widgetId={SITE.adskeeper.banner} className="ak-band" /></div>
       )}
       {breaking && breaking.length > 0 && (
         <div className="ticker">

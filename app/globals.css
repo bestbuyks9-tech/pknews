@@ -243,11 +243,8 @@ a:hover .headline { color: var(--accent); }
 .ak-slot { margin: 24px 0; font-family: var(--sans); }
 .ak-slot:empty { margin: 0; }
 .sidebar .ak-slot { margin-top: 0; }
-/* Banner widget: next to the logo on wide screens, and as a strip under the menu. Phones get the mobile widget instead. */
-.ak-header { flex: 1; max-width: 728px; margin: 0; overflow: hidden; }
-/* Plain blocks with the full column width: the widgets size themselves to their container. */
-.ak-band, .ak-mobile { width: 100%; margin: 16px 0 0; }
-.ak-band:empty, .ak-mobile:empty { margin: 0; }
-@media (max-width: 1100px) { .ak-header { display: none; } }
-@media (max-width: 760px) { .ak-band { display: none; } }
-@media (min-width: 761px) { .ak-mobile { display: none; } }
+/* Banner widget 2100803 is a fixed 300×250 box: centred under the menu on every screen size. */
+.ak-band { width: 300px; max-width: 100%; margin: 16px auto 0; }
+.ak-band:empty { margin: 0 auto; }
+/* The toaster draws its own fixed overlay; its container takes no space. */
+.ak-toaster { margin: 0; }
