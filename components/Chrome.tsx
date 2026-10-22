@@ -43,8 +43,11 @@ export function Header({ active, breaking }: { active?: string; breaking?: Post[
         </div>
       </nav>
       <LiveBar />
-      {SITE.adskeeper.banner && (
-        <div className="wrap"><AdsKeeper widgetId={SITE.adskeeper.banner} className="ak-band" /></div>
+      {(SITE.adskeeper.banner || SITE.adskeeper.mobile) && (
+        <div className="wrap">
+          {SITE.adskeeper.banner && <AdsKeeper widgetId={SITE.adskeeper.banner} className="ak-band" />}
+          {SITE.adskeeper.mobile && <AdsKeeper widgetId={SITE.adskeeper.mobile} className="ak-mobile" />}
+        </div>
       )}
       {breaking && breaking.length > 0 && (
         <div className="ticker">

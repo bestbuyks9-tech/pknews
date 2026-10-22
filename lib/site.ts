@@ -17,7 +17,7 @@ export const SITE = {
     widget: process.env.NEXT_PUBLIC_ADSKEEPER_WIDGET || "2099408",
     /** Banner widget: next to the logo and in the strip under the menu (components/Chrome.tsx). */
     banner: process.env.NEXT_PUBLIC_ADSKEEPER_BANNER || "2100803",
-    /** Mobile site widget: placed once on every page, shown on phones only (app/layout.tsx). */
+    /** Mobile site widget: in the strip under the menu, shown on phones only (components/Chrome.tsx). */
     mobile: process.env.NEXT_PUBLIC_ADSKEEPER_MOBILE || "2099429",
   },
 };
